@@ -534,127 +534,102 @@
 	    <Parameter ParameterId="2016" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out16">Digital out 16</Name>
+          <Name name="local:out16">PWM 00</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2017" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out17">Digital out 17</Name>
+          <Name name="local:out17">PWM 01</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2018" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out18">PWM 00</Name>
+          <Name name="local:out18">PWM 02</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2019" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out19">PWM 01</Name>
+          <Name name="local:out19">PWM 03</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2020" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out20">PWM 02</Name>
+          <Name name="local:out20">PWM 04</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2021" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out21">PWM 03</Name>
+          <Name name="local:out21">PWM 05</Name>
           </Parameter>
 
 
 	    <Parameter ParameterId="2022" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out22">PWM 04</Name>
+          <Name name="local:out22">PWM 06</Name>
           </Parameter>
 
 
 	    <Parameter ParameterId="2023" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out23">PWM 05</Name>
+          <Name name="local:out23">PWM 07</Name>
           </Parameter>
 
 
 	    <Parameter ParameterId="2024" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out24">PWM 06</Name>
+          <Name name="local:out24">PWM 08</Name>
           </Parameter>
 
 
 	    <Parameter ParameterId="2025" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out25">PWM 07</Name>
+          <Name name="local:out25">PWM 09</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2026" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out26">PWM 08</Name>
+          <Name name="local:out26">PWM 1O</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2027" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out27">PWM 09</Name>
+          <Name name="local:out27">PWM 11</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2028" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out28">PWM 1O</Name>
+          <Name name="local:out28">LED run</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2029" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out29">PWM 11</Name>
+          <Name name="local:out29">LED err</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2030" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out30">PWM 12</Name>
+          <Name name="local:out30">LED usr</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2031" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out31">PWM 13</Name>
+          <Name name="local:out31">LED core</Name>
           </Parameter>
-
-	    <Parameter ParameterId="2032" type="std:DWORD">
-          <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
-          <Default>0</Default>
-          <Name name="local:out32">LED run</Name>
-          </Parameter>
-
-	    <Parameter ParameterId="2033" type="std:DWORD">
-          <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
-          <Default>0</Default>
-          <Name name="local:out33">LED err</Name>
-          </Parameter>
-
-	    <Parameter ParameterId="2034" type="std:DWORD">
-          <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
-          <Default>0</Default>
-          <Name name="local:out34">LED usr</Name>
-          </Parameter>
-
-	    <Parameter ParameterId="2035" type="std:DWORD">
-          <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
-          <Default>0</Default>
-          <Name name="local:out35">LED core</Name>
-          </Parameter>
-
 
 
         <Parameter ParameterId="393218" type="std:STRING">

@@ -28,8 +28,29 @@ uint32 g_old_DOs[MAX_DO_NUM];
 uint32 g_all_LEDs[MAX_LED_NUM];
 uint32 g_old_LEDs[MAX_LED_NUM];
 
-uint32 DO_GPIO_PORT[MAX_DO_NUM] = {};
-uint32 LED_GPIO_PORT[MAX_DO_NUM] = {107,129,145,145};
+//  DO ports 0 ~ 15
+uint32 DO_GPIO_PORT[MAX_DO_NUM] = {	4*32 + 10, \
+						4*32 + 13, \
+						5*32 + 7, \
+						5*32 + 4, \
+						5*32 + 5, \
+						5*32 + 2, \
+						5*32 + 1, \
+						3*32 + 14, \
+						2*32 + 15, \
+						2*32 + 17, \
+						4*32 + 26, \
+						4*32 + 27, \
+						0*32 + 0, \
+						1*32 + 18, \
+						1*32 + 24, \
+						0*32 + 20, \
+							};
+//LED ports  0 ~ 3
+uint32 LED_GPIO_PORT[MAX_DO_NUM] = {	2*32+ 22, \
+						2*32+23, \
+						5*32+8, \
+						3*32+1};
 
 int export_port(unsigned int port_num)
 {
