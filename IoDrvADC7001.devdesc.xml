@@ -625,11 +625,6 @@
           <Name name="local:out30">LED usr</Name>
           </Parameter>
 
-	    <Parameter ParameterId="2031" type="std:DWORD">
-          <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
-          <Default>0</Default>
-          <Name name="local:out31">LED core</Name>
-          </Parameter>
 
 
         <Parameter ParameterId="393218" type="std:STRING">

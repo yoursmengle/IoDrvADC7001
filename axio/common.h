@@ -15,7 +15,7 @@ typedef unsigned char uchar;
 #define MAX_AO_NUM	0
 #define MAX_DO_NUM  	16
 #define MAX_PWM_NUM 	12
-#define MAX_LED_NUM	4
+#define MAX_LED_NUM	3
 
 #define MAX_IN		(MAX_AI_NUM+MAX_DI_NUM+MAX_PI_NUM)
 #define MAX_OUT		(MAX_AO_NUM+MAX_DO_NUM+MAX_PWM_NUM+MAX_LED_NUM)

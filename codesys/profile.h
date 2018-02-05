@@ -155,10 +155,10 @@ int CM__Entry(INIT_STRUCT *pInitStruct);
 {"CmpRetain", CmpRetain__Entry, 0}, \
 {"CmpPlcShell", CmpPlcShell__Entry, 0}, \
 {"CmpOpenSSL", CmpOpenSSL__Entry, 0}, \
-{"CmpOPCUAStack", CmpOPCUAStack__Entry, 0}, \
+/*{"CmpOPCUAStack", CmpOPCUAStack__Entry, 0}, \
 {"CmpOPCUAServer", CmpOPCUAServer__Entry, 0}, \
 {"CmpOPCUAProviderIecVarAccess", CmpOPCUAProviderIecVarAccess__Entry, 0}, \
-{"CmpNameServiceServer", CmpNameServiceServer__Entry, 0}, \
+*/{"CmpNameServiceServer", CmpNameServiceServer__Entry, 0}, \
 {"CmpNameServiceClientIec", CmpNameServiceClientIec__Entry, 0}, \
 {"CmpNameServiceClient", CmpNameServiceClient__Entry, 0}, \
 {"CmpMonitor2", CmpMonitor2__Entry, 0}, \
