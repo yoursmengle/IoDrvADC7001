@@ -1,0 +1,26 @@
+Dear customer:
+
+Some ARM architecture based systems have some trouble with our runtime system.
+The runtime has to flush the instruction pipe of the ARM processor for debugging.
+Therefore you'll need our flush module. To use this build it with your kernel and toolchain.
+
+Example:
+
+make -C /usr/src/linux-2.6.XX-genirq-rt-ep93xx/contec/ M=`pwd` modules CC=/opt/contec/toolchain/arm-softfloat-linux-gnu-nptl/nptl-soft/bin/arm-softfloat-linux-gnu-gcc CROSS_COMPILE=/opt/contec/toolchain/arm-softfloat-linux-gnu-nptl/nptl-soft/bin/arm-softfloat-linux-gnu- ARCH=arm
+
+In this example the linux kernel in:  	/usr/src/linux-2.6.XX-genirq-rt-ep93xx/contec/ is used.
+The toolchain for the build is: 	/opt/contec/toolchain/arm-softfloat-linux-gnu-nptl/nptl-soft/bin/arm-softfloat-linux-gnu-
+Target system architecture is: 		arm
+
+the Makefile you need looks s.th. like this:
+
+CC=/opt/contec/toolchain/arm-softfloat-linux-gnu-nptl/nptl-soft/bin/arm-softfloat-linux-gnu-gcc
+CROSS_COMPILE=/opt/contec/toolchain/arm-softfloat-linux-gnu-nptl/nptl-soft/bin/arm-softfloat-linux-gnu-
+CFLAGS+= -mlittle-endian
+
+obj-m := flush.o
+
+Good luck!
+
+The 3s Linux development team
+

@@ -1,0 +1,3 @@
+source ~/.bash_profile
+arm-linux-gnueabi-gcc -o codesyscontrol main.c ./Bin/codesyscontrol.a -I. -I../Components/ -lpthread -ldl -lm -lrt
+

@@ -1,0 +1,27 @@
+ifneq ($(DEP),)
+CMP_NAME=$(shell basename ${DEP} Dep.m4)
+CMP_PATH=$(shell dirname ${DEP})
+CMP_CFILES=$(shell (sed -n '/.*\.c/ { s,^.*(,,g; s,).*,,g; s/[\`,'\'']//g; s,\*,Linux,g; p }') < ${DEP})
+CMP_OBJECTS2=$(CMP_CFILES:%Linux.c=../Sys/%Linux.so.o)
+CMP_OBJECTS=$(CMP_OBJECTS2:%.c=${CMP_PATH}/%.so.o)
+
+endif
+
+
+.PHONY:cmp
+cmp: ${CMP_OBJECTS}
+	@echo "*** Building component ${CMP_NAME} ***";
+	echo ${CMP_CFILES};
+	@if [ -z ${DEP} ]; then echo "usage: make cmp DEP=../..../CmpNameDep.m4"; exit 1; fi
+	@if [ ! -f ${DEP} ]; then echo "given DEP file not found: DEP=${DEP}"; exit 1; fi
+	@echo ${CMP_OBJECTS}
+	$(CC) $(LDFLAGS) -shared -fPIC -lc -Wl,-soname,lib${CMP_NAME} -o lib${CMP_NAME}.so $^
+
+.PHONY:clean_cmp
+clean_cmp:
+	@echo "*** Cleaning component ${CMP_NAME} ***";
+	@if [ -z ${DEP} ]; then echo "usage: make clean_cmp DEP=../..../CmpNameDep.m4"; exit 1; fi
+	@if [ ! -f ${DEP} ]; then echo "given DEP file not found: DEP=${DEP}"; exit 1; fi
+	rm -f lib${CMP_NAME}.so
+	rm -f ${CMP_PATH}/*.o
+	rm -f ../Sys/${CMP_NAME}Linux.so.o

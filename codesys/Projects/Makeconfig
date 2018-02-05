@@ -1,0 +1,230 @@
+#############################################################################################
+#
+# Variables to influence the behavior of this template:
+# - CFLAGS:
+#   - append CFLAGS by setting "Platforms/Linux/CFLAGS"          (setValue)      -> use in profiles
+#   - append CFLAGS by setting "Platforms/Linux/CFLAGS_APPEND"   (addListItem)   -> use in profiles
+#   - append CFLAGS by setting "Platforms/Linux/CFLAGS_FEATURES" (addListItem)   -> use in features
+#   - remove CFLAGS by setting "Platforms/Linux/CFLAGS_FILTER"   (addListItem)   -> use in features/profiles
+#
+#   HINT: as quite a lot of profiles are setting the CFLAGS variable in a destructive way, it is not
+#         possible to set/append CFLAGS from inside a feature! For this we created CFLAGS_FEATURES!
+#
+# - LDFLAGS:
+#   - overload !all! LDFLAGS by setting "Platforms/Linux/LDFLAGS"  (setValue)    -> use in profiles
+#   - append LDFLAGS by setting "Platforms/Linux/LDFLAGS_APPEND"   (addListItem) -> use in profiles
+#   - append LDFLAGS by setting "Platforms/Linux/LDFLAGS_FEATURES" (addListItem) -> use in features
+#   - remove LDFLAGS by setting "Platforms/Linux/LDFLAGS_FILTER"   (addListItem) -> use in features/profiles
+#
+# - CompilePrefix:
+#   - set prefix for crosscompiler via "Platforms/Linux/CompilePrefix" (setValue) -> use in profiles
+#
+# - Optimization:
+#   - overload default "-O0" setting "Platforms/Linux/OptimizationLevel" (setValue) e.g. "-O1" -> use in profiles
+#
+# - QT_INSTALL_PATH:
+#   - set QtInstall directory via "Platforms/Linux/QtInstallDir" (setValue) -> use in profiles
+#
+# - QT_DEFINES:
+#   - overload !all! QT_DEFINES by setting "Platforms/Linux/QT_DEFINES" (setValue) -> use in profiles
+#
+# - QTLibPrefix:
+#	- set Qt library prefix QTLibPrefix via "visualization/Linux/QTLibPrefix" (setValue) -> use in features/profiles
+#	  The default value is "Qt" and is used in QT_LIBS to link Qt libraries. 
+#
+# - QT_LIBS:
+#   - overload !all! QT_LIBS by setting "Platforms/Linux/QT_LIBS"  (setValue)    -> use in profiles
+#   - append QT_LIBS by setting "Platforms/Linux/QT_LIBS_APPEND"   (addListItem) -> use in profiles
+#   - append QT_LIBS by setting "Platforms/Linux/QT_LIBS_FEATURES" (addListItem) -> use in features
+#   - filter QT_LIBS by setting "Platforms/Linux/QT_LIBS_FILTER"   (addListItem) -> use in profiles
+#
+#  HINTS:
+#   - when using lists, always keep in mind, that these are handled as string variables inside
+#     VariableModule (separates only with ", ") -> so ALWAYS split list variables with ", "
+#     and keep the whitespace or you will wrack all items that might have commas included (CFLAGS, LDFLAGS)
+#
+#
+#
+#############################################################################################
+# section targets:
+TARGET= codesyscontrol codesyscontrol.a
+
+#############################################################################################
+# section tools:
+COMPILE_PREFIX=/customer/xiangji/new-arm-xilinx-linux-gnueabi/bin/arm-xilinx-linux-gnueabi-
+CC=${COMPILE_PREFIX}gcc
+CXX=${COMPILE_PREFIX}g++
+LD=${COMPILE_PREFIX}ld
+AR=${COMPILE_PREFIX}ar
+AS=${COMPILE_PREFIX}as
+
+#############################################################################################
+# section includes:
+CFLAGS+= -I. -I../ -I../../../Components -I../Components
+CFLAGS+=-I../../../Components__CONFIDENTIAL__/CmpCodeMeter 
+CFLAGS+=-I../../../Components__AddOns__/CmpOPCUAProviderIecVarAccess\
+-I../../../Components__AddOns__/CmpOPCUAStack/include\
+-I../../../Components__CONFIDENTIAL__/CmpCodeMeter/CodeMeter_SDK\
+-I../../../Components__CONFIDENTIAL__/CmpCodeMeter/CodeMeter_SDK/base\
+-I../../../Components__CONFIDENTIAL__/CmpCodeMeter/CodeMeter_SDK/crypto\
+-I../../../Components__CONFIDENTIAL__/CmpCodeMeter/CodeMeter_SDK/cmact\
+-I../../../Components__CONFIDENTIAL__/CmpCodeMeter/CodeMeter_SDK/corecm\
+-I../../../Components__CONFIDENTIAL__/CmpCodeMeter/CodeMeter_SDK/posix\
+-I../../../Components__CONFIDENTIAL__/CmpCodeMeter/CodeMeter_SDK/external/hidapi/include\
+-I../../../Components__CONFIDENTIAL__/CmpCodeMeter/CodeMeter_SDK/external/hidapi/src\
+-I../../../Components__AddOns__/CmpOPCUAServer\
+-I../../../Components__AddOns__/CmpOPCUAServer/CODESYSControlV3\
+-I../../../Components__AddOns__/CmpOPCUAStack/include\
+-I../../../Components__AddOns__/CmpOPCUAStack\
+-I../../../Components__AddOns__/CmpOPCUAStack/CODESYSControlV3\
+-I../../../Components__CONFIDENTIAL__/CmpOPCUA/Modified/source/core\
+-I../../../Components__CONFIDENTIAL__/CmpOPCUA/Modified/source/proxystub/clientproxy\
+-I../../../Components__CONFIDENTIAL__/CmpOPCUA/Modified/source/proxystub/serverstub\
+-I../../../Components__CONFIDENTIAL__/CmpOPCUA/Modified/source/securechannel\
+-I../../../Components__CONFIDENTIAL__/CmpOPCUA/Modified/source/stackcore\
+-I../../../Components__CONFIDENTIAL__/CmpOPCUA/Modified/source/transport/tcp\
+-I../../../Components__CONFIDENTIAL__/CmpOPCUA/Modified/source/transport/https\
+-I../../../Components/CmpOpenSSL\
+-I../../../Components/CmpOpenSSL/OpenSSL/include\
+-I../../../Components/CmpOpenSSL/OpenSSL\
+-I../../../Components/CmpOpenSSL/OpenSSL/crypto\
+-I../../../Components/CmpOpenSSL/OpenSSL/crypto/asn1\
+-I../../../Components/CmpOpenSSL/OpenSSL/crypto/evp\
+-I../../../Components/CmpOpenSSL/OpenSSL/crypto/modes\
+-I../../../Components/CmpOpenSSL/OpenSSL/crypto/des\
+-I../../../Components/CmpOpenSSL/OpenSSL/ssl\
+
+#############################################################################################
+# section default CFLAGS:
+CFLAGS += -DPATHS_RELATIVE -DTRG_ARM
+CFLAGS_STATIC = -DMIXED_LINK
+# DYNAMIC_LINK may not be set for dynamic components
+CFLAGS_DYNAMIC = 
+
+CFLAGS += -D_GNU_SOURCE -DCAALib -fno-ident -std=c99 -Wall -Wextra -Wno-unused -Wno-unused-parameter -Wstrict-prototypes -fshort-wchar -fsigned-char -g 
+
+CFLAGS += -O0 
+
+#############################################################################################
+# section profile CFLAGS (appended):
+CFLAGS += -Wno-psabi -std=c99 -O0 -Wall -Wextra -Wno-unused -Wno-unused-parameter -Wstrict-prototypes -fshort-wchar -DLINUX -D_GNU_SOURCE -DCAALib -fno-ident -DTRG_ARM -fsigned-char -mstructure-size-boundary=8 -mapcs -fPIC
+
+#############################################################################################
+# section profile CFLAGS (appended from list):
+
+
+#############################################################################################
+# section feature CFLAGS (appended from list):
+
+#############################################################################################
+# section component CFLAGS (appended from list):
+CFLAGS +=
+#############################################################################################
+# section LDFLAGS (default or overloaded):
+LDFLAGS += -lm -lpthread -ldl -lrt -Wl,-no-wchar-size-warning
+
+#############################################################################################
+# section profile LDFLAGS (appended from list):
+
+#############################################################################################
+# section feature LDFLAGS (appended from list):
+
+#############################################################################################
+# section targetvisu:
+
+#############################################################################################
+# section static CFLAGS (Cmp<XYZ>_EXTERNAL):
+# In the runtime build, set the define XXX_EXTERNAL for every optional, dynamic component:
+CFLAGS_STATIC  += -DLINUX 
+#############################################################################################
+# section static and dynamic componentlists:
+COMPONENTS_STATIC += CmpWebServerHandlerV3.cmp.o CmpCAASdoClient.cmp.o SysTimer.cmp.o CmpCAAStorage.cmp.o CmpChannelClient.cmp.o CmpAlarmManager.cmp.o CmpCAAMemBlockMan.cmp.o SysCpuHandling.cmp.o CmpBlkDrvCom.cmp.o CmpMemPool.cmp.o CmpApp.cmp.o CmpBlkDrvUdp.cmp.o CmpAsyncMgr.cmp.o CmpCAABehaviourModel.cmp.o CmpRouter.cmp.o CmpDynamicText.cmp.o SysModule.cmp.o CmpChannelServer.cmp.o CM.cmp.o CmpOPCUAProviderIecVarAccess.cmp.o CmpEL6751CanDrv.cmp.o CmpCAATickUtil.cmp.o CmpCAASerialCom.cmp.o CmpIoMgr.cmp.o CmpCAATimer.cmp.o CmpNameServiceClientIec.cmp.o CmpIecTask.cmp.o CmpCAACallback.cmp.o SysInternalLib.cmp.o SysSemProcess.cmp.o SysProcess.cmp.o SysReadWriteLock.cmp.o CmpBitmapPool.cmp.o CmpBlkDrvTcp.cmp.o CmpCodeMeter.cmp.o CmpCAAAsyncMan.cmp.o SysTarget.cmp.o CmpOPCUAServer.cmp.o SysExcept.cmp.o CmpWebServer.cmp.o SysOut.cmp.o CmpChannelMgr.cmp.o CmpNameServiceClient.cmp.o SysShm.cmp.o CmpCAAFile.cmp.o CmpSchedule.cmp.o CmpVisuHandler.cmp.o SysMsgQ.cmp.o CmpPlcShell.cmp.o CmpSettings.cmp.o CmpUserDB.cmp.o CmpCAASegBufferMan.cmp.o SysSem.cmp.o CmpUserDBObjects.cmp.o CmpIecStringUtils.cmp.o CmpBinTagUtilIec.cmp.o CmpIoDrvIec.cmp.o CmpMonitor2.cmp.o CmpCommunicationLib.cmp.o CmpChannelClientIec.cmp.o CmpRetain.cmp.o SysMutex.cmp.o SysTime.cmp.o CmpOPCUAStack.cmp.o CmpAppBP.cmp.o CmpTraceMgr.cmp.o CmpAppForce.cmp.o CmpNameServiceServer.cmp.o CmpSrv.cmp.o CmpCAADTUtil.cmp.o CmpFileTransfer.cmp.o SysSemCount.cmp.o SysSocket.cmp.o SysEvent.cmp.o CmpCoreDump.cmp.o CmpIecVarAccess.cmp.o CmpCAATypes.cmp.o SysCom.cmp.o CmpCAACanL2.cmp.o CmpCAASdoServer.cmp.o CmpCAATick.cmp.o SysFile.cmp.o SysMem.cmp.o CmpLog.cmp.o CmpChecksum.cmp.o CmpCAANetBaseServices.cmp.o SysTask.cmp.o SysEthernet.cmp.o CmpCharDevice.cmp.o CmpDevice.cmp.o CmpVisuServer.cmp.o SysTimeRtc.cmp.o CmpCryptMD5.cmp.o SysDir.cmp.o CmpOpenSSL.cmp.o CmpEventMgr.cmp.o CmpBinTagUtil.cmp.o CmpCAARealTimeClock.cmp.o CmpUserMgr.cmp.o 
+COMPONENTS_DYNAMIC += 
+#############################################################################################
+# section linux platform objects
+OBJECTS_STATIC_SysSocket=../Sys/SysSocketLinux.a.o
+OBJECTS_DYNAMIC_SysSocket=../Sys/SysSocketLinux.so.o
+OBJECTS_STATIC_SysCom=../Sys/SysComLinux.a.o
+OBJECTS_DYNAMIC_SysCom=../Sys/SysComLinux.so.o
+OBJECTS_STATIC_SysCpuMultiCore=../Sys/SysCpuMultiCoreLinux.a.o
+OBJECTS_DYNAMIC_SysCpuMultiCore=../Sys/SysCpuMultiCoreLinux.so.o
+OBJECTS_STATIC_SysDir=../Sys/SysDirLinux.a.o
+OBJECTS_DYNAMIC_SysDir=../Sys/SysDirLinux.so.o
+OBJECTS_STATIC_SysEthernet=../Sys/SysEthernetLinux.a.o
+OBJECTS_DYNAMIC_SysEthernet=../Sys/SysEthernetLinux.so.o
+OBJECTS_STATIC_SysEvent=../Sys/SysEventLinux.a.o
+OBJECTS_DYNAMIC_SysEvent=../Sys/SysEventLinux.so.o
+OBJECTS_STATIC_SysExcept=../Sys/SysExceptLinux.a.o
+OBJECTS_DYNAMIC_SysExcept=../Sys/SysExceptLinux.so.o
+OBJECTS_STATIC_SysFile=../Sys/SysFileLinux.a.o
+OBJECTS_DYNAMIC_SysFile=../Sys/SysFileLinux.so.o
+OBJECTS_STATIC_SysGraphic=../Sys/SysGraphicLinux.a.o ../visu/SysMainVisu.app.o  ../visu/windowwidget.app.o ../visu/moc_SysMainVisu.app.o ../visu/moc_windowwidget.app.o
+OBJECTS_DYNAMIC_SysGraphic=../Sys/SysGraphicLinux.so.o ../visu/SysMainVisu.app.o  ../visu/windowwidget.app.o ../visu/moc_SysMainVisu.app.o ../visu/moc_windowwidget.app.o
+OBJECTS_STATIC_SysGraphicNative=../Sys/SysGraphicLinuxNative.a.o
+OBJECTS_DYNAMIC_SysGraphicNative=../Sys/SysGraphicLinuxNative.so.o
+OBJECTS_STATIC_SysMem=../Sys/SysMemLinux.a.o
+OBJECTS_DYNAMIC_SysMem=../Sys/SysMemLinux.so.o
+OBJECTS_STATIC_SysMsgQ=../Sys/SysMsgQLinux.a.o
+OBJECTS_DYNAMIC_SysMsgQ=../Sys/SysMsgQLinux.so.o
+OBJECTS_STATIC_SysModule=../Sys/SysModuleLinux.a.o
+OBJECTS_DYNAMIC_SysModule=../Sys/SysModuleLinux.so.o
+OBJECTS_STATIC_SysOut=../Sys/SysOutLinux.a.o
+OBJECTS_DYNAMIC_SysOut=../Sys/SysOutLinux.so.o
+OBJECTS_STATIC_SysPci=../Sys/SysPciLinux.a.o
+OBJECTS_DYNAMIC_SysPci=../Sys/SysPciLinux.so.o
+OBJECTS_STATIC_SysPort=../Sys/SysPortLinux.a.o
+OBJECTS_DYNAMIC_SysPort=../Sys/SysPortLinux.so.o
+OBJECTS_STATIC_SysProcess=../Sys/SysProcessLinux.a.o
+OBJECTS_DYNAMIC_SysProcess=../Sys/SysProcessLinux.so.o
+OBJECTS_STATIC_SysMutex=../Sys/SysMutexLinux.a.o
+OBJECTS_DYNAMIC_SysMutex=../Sys/SysMutexLinux.so.o
+OBJECTS_STATIC_SysReadWriteLock=../Sys/SysReadWriteLockLinux.a.o
+OBJECTS_DYNAMIC_SysReadWriteLock=../Sys/SysReadWriteLockLinux.so.o
+OBJECTS_STATIC_SysSem=../Sys/SysSemLinux.a.o
+OBJECTS_DYNAMIC_SysSem=../Sys/SysSemLinux.so.o
+OBJECTS_STATIC_SysSemCount=../Sys/SysSemCountLinux.a.o
+OBJECTS_DYNAMIC_SysSemCount=../Sys/SysSemCountLinux.so.o
+OBJECTS_STATIC_SysSemProcess=../Sys/SysSemProcessLinux.a.o
+OBJECTS_DYNAMIC_SysSemProcess=../Sys/SysSemProcessLinux.so.o
+OBJECTS_STATIC_SysShm=../Sys/SysShmLinux.a.o
+OBJECTS_DYNAMIC_SysShm=../Sys/SysShmLinux.so.o
+OBJECTS_STATIC_SysTarget=../Sys/SysTargetLinux.a.o
+OBJECTS_DYNAMIC_SysTarget=../Sys/SysTargetLinux.so.o
+OBJECTS_STATIC_SysTargetvisu=../Sys/SysTargetvisuLinux.a.o
+OBJECTS_DYNAMIC_SysTargetvisu=../Sys/SysTargetvisuLinux.so.o
+OBJECTS_STATIC_SysTask=../Sys/SysTaskLinux.a.o
+OBJECTS_DYNAMIC_SysTask=../Sys/SysTaskLinux.so.o
+OBJECTS_STATIC_SysTime=../Sys/SysTimeLinux.a.o
+OBJECTS_DYNAMIC_SysTime=../Sys/SysTimeLinux.so.o
+OBJECTS_STATIC_SysTimeRtc=../Sys/SysTimeRtcLinux.a.o
+OBJECTS_DYNAMIC_SysTimeRtc=../Sys/SysTimeRtcLinux.so.o
+OBJECTS_STATIC_SysTimer=../Sys/SysTimerLinux.a.o
+OBJECTS_DYNAMIC_SysTimer=../Sys/SysTimerLinux.so.o
+OBJECTS_STATIC_SysWindowFileDialog=../Sys/SysWindowFileDialogLinux.a.o
+OBJECTS_DYNAMIC_SysWindowFileDialog=../Sys/SysWindowFileDialogLinux.so.o
+OBJECTS_STATIC_SysWindow=../Sys/SysWindowLinux.a.o
+OBJECTS_DYNAMIC_SysWindow=../Sys/SysWindowLinux.so.o
+OBJECTS_STATIC_SysWindowTest=../Sys/SysWindowTestLinux.a.o
+OBJECTS_DYNAMIC_SysWindowTest=../Sys/SysWindowTestLinux.so.o
+OBJECTS_STATIC_SysWindowNative=../Sys/SysWindowLinuxNative.a.o
+OBJECTS_DYNAMIC_SysWindowNative=../Sys/SysWindowLinuxNative.so.o
+OBJECTS_STATIC_SysNativeControl=../Sys/SysNativeControlLinux.a.o
+OBJECTS_DYNAMIC_SysNativeControl=../Sys/SysNativeControlLinux.so.o
+OBJECTS_STATIC_SysNativeCommonControls=../Sys/SysNativeCommonControlsLinux.a.o ../visu/SysNativeCommonControlsLinuxQt.app.o
+OBJECTS_DYNAMIC_SysNativeCommonControls=../Sys/SysNativeCommonControlsLinux.so.o ../visu/SysNativeCommonControlsLinuxQt.app.o
+
+
+OBJECTS_STATIC_SysCpuHandling=../Sys/SysCpuHandlingLinux.a.o ../Sys/SysCpuARM.a.o
+OBJECTS_DYNAMIC_SysCpuHandling=../Sys/SysCpuHandlingLinux.so.o ../Sys/SysCpuARM.so.o
+
+#############################################################################################
+# section CFLAGS, LDFLAGS and QT_LIBS modification:
+
+
+
+#
+# HINT: This section must be at the end of the file or the filter mechanism will not work!
+#
+#############################################################################################
+
+

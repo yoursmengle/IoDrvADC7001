@@ -1,0 +1,148 @@
+# Overloadable configuration
+USE_NATIVE_GDB?=n
+
+# Some variables
+CDS_BINARY?=codesyscontrol
+CDS_CFG?=CODESYSControl.cfg
+
+# remote working dir
+CDS_FOLDER?=CODESYSControl
+
+
+
+# Parsing the configuration
+ifeq (${USE_NATIVE_GDB},y)
+GDB=gdb
+else
+GDB=${COMPILE_PREFIX}gdb
+endif
+
+
+# only do this for the ssh/scp related commands
+ifeq (${MAKECMDGOALS},$(filter ${MAKECMDGOALS}, ${HOME}/.ssh/id_rsa.pub prepare_ssh ssh deploy start stop deploy_cmp gdbserver gdbserver_attach ))
+
+#
+# credentials files
+#
+-include Makedeploy.user
+-include Makedeploy.ip
+
+#
+# CREDENTIALS are stored in these two files, so one can easily switch targets/username by "echoing" into Makedeploy.ip or Makedeploy.user
+#
+Makedeploy.ip:
+	@ [ -z "${TARGET_IP}" ] && read -p "Please enter ip for remote target: " TARGET_IP && echo "TARGET_IP?=$${TARGET_IP}" > Makedeploy.ip;
+
+Makedeploy.user:
+	@ [ -z "${TARGET_USER}" ] && read -p "Please enter user for remote target: " TARGET_USER && echo "TARGET_USER?=$${TARGET_USER}" > Makedeploy.user; 
+
+endif 
+
+
+# set sudo command
+ifeq (${TARGET_USER}, root)
+	SUDO=
+else
+	SUDO=sudo
+endif
+
+
+#
+# create publickey
+#
+${HOME}/.ssh/id_rsa.pub:
+	@echo "*** Create publickey ***";
+	ssh-keygen -N "" -f ${HOME}/.ssh/id_rsa
+
+#
+# publish ssh authorized keys on remote target
+#
+.PHONY: prepare_ssh 
+prepare_ssh: ${HOME}/.ssh/id_rsa.pub Makedeploy.ip Makedeploy.user
+	@echo "*** Prepare ssh ***";
+	@ssh-copy-id ${TARGET_USER}@${TARGET_IP} 
+
+#
+# just connect via ssh
+#
+.PHONY: ssh
+ssh: prepare_ssh
+	@echo "*** Connecting to target ***";
+	ssh ${TARGET_USER}@${TARGET_IP}
+
+
+#
+# deploy runtime and if available the config and all lib*.so
+#
+#
+.PHONY: deploy
+deploy: prepare_ssh 
+	@echo "*** Deploy runtime ***";
+	ssh ${TARGET_USER}@${TARGET_IP} "mkdir -p ${CDS_FOLDER}"
+	@find . -maxdepth 1 \( -name "codesyscontrol" -o -name "CODESYSControl.cfg" -o -name 'lib*.so' \) -exec scp {} ${TARGET_USER}@${TARGET_IP}:${CDS_FOLDER}/ \;
+
+#
+# deploy runtime
+#
+.PHONY: deploy
+deploy_cmp: prepare_ssh cmp
+	@echo "*** Deploy component ***";
+	@if [ -z ${DEP} ]; then echo "usage: make deploy_cmp DEP=../..../CmpNameDep.m4"; exit 1; fi
+	ssh -t ${TARGET_USER}@${TARGET_IP} "mkdir -p ${CDS_FOLDER}"
+	scp lib${CMP_NAME}.so ${TARGET_USER}@${TARGET_IP}:${CDS_FOLDER}/;
+
+
+
+#
+# start runtime (with deploy)
+#
+.PHONY: start
+start: prepare_ssh
+	@echo "*** Starting runtime ***";
+	ssh -t ${TARGET_USER}@${TARGET_IP} 'cd ${CDS_FOLDER}; [ ! -x ./${CDS_BINARY} ] && ${SUDO} chmod +x ./${CDS_BINARY} ;  ${SUDO} LD_LIBRARY_PATH=. DISPLAY=:0  $${DISPLAY}  ./${CDS_BINARY} -d ./${CDS_CFG}' &
+
+
+
+#
+# stop runtime and debugger, or installed runtimes
+#
+.PHONY: stop
+stop: prepare_ssh
+	@echo "*** Stopping all runtimes ***";
+	@ssh -t ${TARGET_USER}@${TARGET_IP} '${SUDO} killall -9 ${CDS_BINARY}; ${SUDO} killall -9 gdbserver;[ -f /etc/init.d/codesyscontrol ] && ${SUDO} /etc/init.d/codesyscontrol stop;'
+
+
+#
+# start gdbserver on remote target
+#
+.PHONY: gdbserver
+gdbserver: prepare_ssh
+	@echo "*** Starting gdbserver ***";
+	ssh -t ${TARGET_USER}@${TARGET_IP} 'cd ${CDS_FOLDER}; export LD_LIBRARY_PATH=. DISPLAY=:0; ${SUDO} gdbserver localhost:2345 ./${CDS_BINARY} ./${CDS_CFG}' &
+	@echo "*** starting cross gdb ***"
+	echo "handle SIG40 noprint" > gdbinit.gdbserver
+	echo "target remote "${TARGET_IP}":2345" >> gdbinit.gdbserver
+	${GDB} -x gdbinit.gdbserver
+
+
+#
+# attach via gdbserver on remote target
+#
+.PHONY: gdbserver
+gdbserver_attach: prepare_ssh
+	@echo "*** Attach with gdbserver ***";
+	ssh -t ${TARGET_USER}@${TARGET_IP} 'cd ${CDS_FOLDER}; export LD_LIBRARY_PATH=. DISPLAY=:0; ${SUDO} gdbserver --attach localhost:2345 $$(pgrep codesyscontrol | tail -n 1)' &
+	@echo "*** starting cross gdb ***"
+	echo "handle SIG40 noprint" > gdbinit.gdbserver
+	echo "target remote "${TARGET_IP}":2345" >> gdbinit.gdbserver
+	${GDB} -x gdbinit.gdbserver
+
+
+
+#
+# delete credentials files
+#
+.PHONY=wipe_login
+wipe_login:
+	rm -f Makedeploy.ip;
+	rm -f Makedeploy.user;
