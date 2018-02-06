@@ -598,7 +598,7 @@
 	    <Parameter ParameterId="2026" type="std:DWORD">
           <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
-          <Name name="local:out26">PWM 1O</Name>
+          <Name name="local:out26">PWM 10</Name>
           </Parameter>
 
 	    <Parameter ParameterId="2027" type="std:DWORD">
