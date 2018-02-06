@@ -29,81 +29,85 @@ uint32 g_all_LEDs[MAX_LED_NUM];
 uint32 g_old_LEDs[MAX_LED_NUM];
 
 //  DO ports 0 ~ 15
-uint32 DO_GPIO_PORT[MAX_DO_NUM] = {	4*32 + 10, \
-						4*32 + 13, \
-						5*32 + 7, \
-						5*32 + 4, \
-						5*32 + 5, \
-						5*32 + 2, \
-						5*32 + 1, \
-						3*32 + 14, \
-						2*32 + 15, \
-						2*32 + 17, \
-						4*32 + 26, \
-						4*32 + 27, \
-						0*32 + 0, \
-						1*32 + 18, \
-						1*32 + 24, \
-						0*32 + 20, \
-							};
+uint32 DO_GPIO_PORT[MAX_DO_NUM] = {	
+						4*32 + 10,\
+						4*32 + 13,\
+						5*32 + 7,\
+						5*32 + 4,\
+						5*32 + 5,\
+						5*32 + 2,\
+						5*32 + 1,\
+						3*32 + 14,\
+						2*32 + 15,\
+						2*32 + 17,\
+						4*32 + 26,\
+						4*32 + 27,\
+						0*32 + 0,\
+						1*32 + 18,\
+						1*32 + 24,\
+						0*32 + 20,\
+					};
 //LED ports  0 ~ 2
 
-uint32 LED_GPIO_PORT[MAX_LED_NUM*2] = {2*32+ 22, \   
-						2*32+23, \
-						3*32+1, \
-						2*32+25, \
-						2*32+24, \
-						5*32+8};
+uint32 LED_GPIO_PORT[MAX_LED_NUM*2] = {
+						2*32+25,\
+						2*32+24,\
+						5*32+8,\
+						2*32+ 22,\
+						2*32+23,\
+						3*32+1
+						};
+						
 
-
-int export_port(unsigned int port_num)
+uint32 export_port(uint32 port_num)
 {
 	char cmd[80];
 	sprintf(cmd, "echo %d > /sys/class/gpio/export \n",port_num);
 	FILE *fp = popen(cmd, "r");
 	pclose(fp);
-		printf(cmd);
+//		printf(cmd);
 	return 0;
 }
-int output_high(unsigned int port_num)
+uint32 set_output(uint32 port_num)
 {
 	char cmd[80];
 	sprintf(cmd, "echo out > /sys/class/gpio/gpio%d/direction \n", port_num);
 	FILE *fp = popen(cmd, "r");
 	pclose(fp);
-
-	sprintf(cmd, "echo 1 > /sys/class/gpio/gpio%d/value \n", port_num);
-	fp = popen(cmd, "r");
-	pclose(fp);
-		printf(cmd);
+//		printf(cmd);
 	return 0;
 }
 
-int output_low(unsigned int port_num)
-{
-	char cmd[80];
-	sprintf(cmd, "echo out > /sys/class/gpio/gpio%d/direction \n", port_num);
-	FILE *fp = popen(cmd, "r");
-	pclose(fp);
-
-	sprintf(cmd, "echo 0 > /sys/class/gpio/gpio%d/value \n", port_num);
-	fp = popen(cmd, "r");
-	pclose(fp);
-		printf(cmd);
-	return 0;
-}
-
-int input_port(unsigned int port_num)
+uint32 set_input(uint32 port_num)
 {
 	char cmd[80];
 	sprintf(cmd, "echo in > /sys/class/gpio/gpio%d/direction \n", port_num);
 	FILE *fp = popen(cmd, "r");
 	pclose(fp);
-		printf(cmd);
+//		printf(cmd);
 	return 0;
 }
 
+uint32 output_high(uint32 port_num)
+{
+	char cmd[80];
+	sprintf(cmd, "echo 1 > /sys/class/gpio/gpio%d/value \n", port_num);
+	FILE *fp = popen(cmd, "r");
+	pclose(fp);
+//		printf(cmd);
+	return 0;
+}
 
+uint32 output_low(uint32 port_num)
+{
+	char cmd[80];
+
+	sprintf(cmd, "echo 0 > /sys/class/gpio/gpio%d/value \n", port_num);
+	FILE *fp = popen(cmd, "r");
+	pclose(fp);
+//		printf(cmd);
+	return 0;
+}
 
 uint32 init_LED(void)
 {
@@ -111,14 +115,19 @@ uint32 init_LED(void)
 	printf("starting Init the LEDs...\n");
 
 /************************************* for test jhzhou*/
-	for(i = 0; i<MAX_LED_NUM*2; i++) {
-		uint32 port_no = LED_GPIO_PORT[i];
-		export_port(port_no);
-		output_high(port_no);
-	}
-	for(i = 0; i< MAX_LED_NUM; i++) {
+	for(i = 0; i<MAX_LED_NUM; i++) {
 		g_all_LEDs[i] = 0;
 		g_old_LEDs[i] = 0;
+
+		uint32 port_no = LED_GPIO_PORT[i];
+		export_port(port_no);
+		set_output(port_no);
+		output_high(port_no);  //gpio high will set the light off
+		
+		port_no+=MAX_LED_NUM;
+		export_port(port_no);
+		set_output(port_no);
+		output_high(port_no);  //gpio high will set the light off
 	}
 
 	return 0;
@@ -137,15 +146,7 @@ uint32 init_DI_DO(void)
 	init_gpio();
 
 	init_LED();
-/*
-	for(i = 0; i<MAX_LED_NUM; i++) {
-		uint32 port_no = LED_GPIO_PORT[i];
-		export_port(port_no);
-		output_low(port_no);
-		g_all_LEDs[i] = 0;
-		g_old_LEDs[i] = 0;
-	}
-*/
+
 	return 0;
 }
 

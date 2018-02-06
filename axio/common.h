@@ -26,7 +26,7 @@ typedef unsigned char uchar;
 #define BASE_AI	0
 #define BASE_DI	(BASE_AI+MAX_AI_NUM)
 #define BASE_PI	(BASE_DI+MAX_DI_NUM)
-#define BASE_AO	0
+#define BASE_AO	(BASE_PI+MAX_PI_NUM)
 #define BASE_DO	(BASE_AO+MAX_AO_NUM)
 #define BASE_PWM	(BASE_DO+MAX_DO_NUM)
 #define BASE_LED	(BASE_PWM+MAX_PWM_NUM)

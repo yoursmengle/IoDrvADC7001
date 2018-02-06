@@ -13,7 +13,7 @@
     <DeviceIdentification>
       <Type>40100</Type>
       <Id>1001 0008</Id>
-      <Version>3.5.8.20</Version>
+      <Version>3.5.8.10</Version>
     </DeviceIdentification>
     <DeviceInfo>
       <Name name="local:ModelName">IoDrvADC7001</Name>
