@@ -8,8 +8,8 @@
 
 	
 	
-#ifndef _IODRVCONFEITF_H_
-#define _IODRVCONFEITF_H_
+#ifndef _IODRVADC7001ITF_H_
+#define _IODRVADC7001ITF_H_
 
 #include "CmpStd.h"
 
@@ -36,7 +36,7 @@ typedef struct tagmyexternalfunction_struct
 
 void CDECL CDECL_EXT myexternalfunction(myexternalfunction_struct *p);
 typedef void (CDECL CDECL_EXT* PFMYEXTERNALFUNCTION_IEC) (myexternalfunction_struct *p);
-#if defined(IODRVCONFE_NOTIMPLEMENTED) || defined(MYEXTERNALFUNCTION_NOTIMPLEMENTED)
+#if defined(IODRVADC7001_NOTIMPLEMENTED) || defined(MYEXTERNALFUNCTION_NOTIMPLEMENTED)
 	#define USE_myexternalfunction
 	#define EXT_myexternalfunction
 	#define GET_myexternalfunction(fl)  ERR_NOTIMPLEMENTED
@@ -50,7 +50,7 @@ typedef void (CDECL CDECL_EXT* PFMYEXTERNALFUNCTION_IEC) (myexternalfunction_str
 	#define CAL_myexternalfunction  myexternalfunction
 	#define CHK_myexternalfunction  TRUE
 	#define EXP_myexternalfunction  s_pfCMRegisterAPI2( (const CMP_EXT_FUNCTION_REF*)"myexternalfunction", (RTS_UINTPTR)myexternalfunction, 1, 0xE1C6D757, 0x3040000) 
-#elif defined(MIXED_LINK) && !defined(IODRVCONFE_EXTERNAL)
+#elif defined(MIXED_LINK) && !defined(IODRVADC7001_EXTERNAL)
 	#define USE_myexternalfunction
 	#define EXT_myexternalfunction
 	#define GET_myexternalfunction(fl)  CAL_CMGETAPI( "myexternalfunction" ) 
@@ -58,12 +58,12 @@ typedef void (CDECL CDECL_EXT* PFMYEXTERNALFUNCTION_IEC) (myexternalfunction_str
 	#define CHK_myexternalfunction  TRUE
 	#define EXP_myexternalfunction  s_pfCMRegisterAPI2( (const CMP_EXT_FUNCTION_REF*)"myexternalfunction", (RTS_UINTPTR)myexternalfunction, 1, 0xE1C6D757, 0x3040000) 
 #elif defined(CPLUSPLUS_ONLY)
-	#define USE_IoDrvConFEmyexternalfunction
-	#define EXT_IoDrvConFEmyexternalfunction
-	#define GET_IoDrvConFEmyexternalfunction  ERR_OK
-	#define CAL_IoDrvConFEmyexternalfunction  myexternalfunction
-	#define CHK_IoDrvConFEmyexternalfunction  TRUE
-	#define EXP_IoDrvConFEmyexternalfunction  s_pfCMRegisterAPI2( (const CMP_EXT_FUNCTION_REF*)"myexternalfunction", (RTS_UINTPTR)myexternalfunction, 1, 0xE1C6D757, 0x3040000) 
+	#define USE_IoDrvADC7001myexternalfunction
+	#define EXT_IoDrvADC7001myexternalfunction
+	#define GET_IoDrvADC7001myexternalfunction  ERR_OK
+	#define CAL_IoDrvADC7001myexternalfunction  myexternalfunction
+	#define CHK_IoDrvADC7001myexternalfunction  TRUE
+	#define EXP_IoDrvADC7001myexternalfunction  s_pfCMRegisterAPI2( (const CMP_EXT_FUNCTION_REF*)"myexternalfunction", (RTS_UINTPTR)myexternalfunction, 1, 0xE1C6D757, 0x3040000) 
 #elif defined(CPLUSPLUS)
 	#define USE_myexternalfunction
 	#define EXT_myexternalfunction
@@ -93,27 +93,27 @@ typedef void (CDECL CDECL_EXT* PFMYEXTERNALFUNCTION_IEC) (myexternalfunction_str
 typedef struct
 {
 	IBase_C *pBase;
-} IIoDrvConFE_C;
+} IIoDrvADC7001_C;
 
 #ifdef CPLUSPLUS
-class IIoDrvConFE : public IBase
+class IIoDrvADC7001 : public IBase
 {
 	public:
 };
-	#ifndef ITF_IoDrvConFE
-		#define ITF_IoDrvConFE static IIoDrvConFE *pIIoDrvConFE = NULL;
+	#ifndef ITF_IoDrvADC7001
+		#define ITF_IoDrvADC7001 static IIoDrvADC7001 *pIIoDrvADC7001 = NULL;
 	#endif
-	#define EXTITF_IoDrvConFE
+	#define EXTITF_IoDrvADC7001
 #else	/*CPLUSPLUS*/
-	typedef IIoDrvConFE_C		IIoDrvConFE;
-	#ifndef ITF_IoDrvConFE
-		#define ITF_IoDrvConFE
+	typedef IIoDrvADC7001_C		IIoDrvADC7001;
+	#ifndef ITF_IoDrvADC7001
+		#define ITF_IoDrvADC7001
 	#endif
-	#define EXTITF_IoDrvConFE
+	#define EXTITF_IoDrvADC7001
 #endif
 
 #ifdef CPLUSPLUS_ONLY
   #undef CPLUSPLUS_ONLY
 #endif
 
-#endif /*_IODRVCONFEITF_H_*/
+#endif /*_IODRVADC7001ITF_H_*/

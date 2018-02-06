@@ -5,7 +5,7 @@
  * <copyright></copyright>
  */
 
-SET_INTERFACE_NAME(`IoDrvConFE')
+SET_INTERFACE_NAME(`IoDrvADC7001')
 
 /** EXTERN LIB SECTION BEGIN **/
 
