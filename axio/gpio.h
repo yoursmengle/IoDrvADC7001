@@ -11,14 +11,10 @@
 #define _GPIO_H_
 #include "common.h"
 
-
-#define GPIO_BASE_ADDR  		(0xe000a000)
-#define GPIO_ALLOC_SIZE      	((size_t)0x1000)
-
-
 #define DIR_OUT	        (1)
 #define DIR_IN	        (0)
-#define MAX_GPIO 		118
+#define MAX_GPIO 		199
+
 uint32 init_gpio();
 uint32 init_DI_DO(void);
 uint32 read_all_DIs();
