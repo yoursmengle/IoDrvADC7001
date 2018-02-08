@@ -22,8 +22,10 @@
 #include "gpio.h"
 #include "i2c.h"
 
-#define GPIO_DATAIN  0x138
-#define GPIO_DATAOUT 0x13c
+#define GPIO_DATAIN  		0x0138
+#define GPIO_DATAOUT 		0x013c
+//#define GPIO_CLEAR_DATAOUT 	0x0190
+//#define GPIO_SET_DATAOUT 	0x0194
 
 void* gpio_phy_addr[GPIO_BANKS_NUM] = { 	0x44e07000,	0x4804c000,	0x481ac000,	0x481ae000,	0x48320000,	0x48322000 };
 void* gpio_vir_addr[GPIO_BANKS_NUM] = {	NULL,		NULL,		NULL,		NULL,		NULL,		NULL};  //映射后赋值	
@@ -116,20 +118,6 @@ uint32 set_output(uint32 port_num)
 	return 0;
 }
 
-uint32 read_input(uint32 port_num)
-{
-	uint32 bank = port_num/32;
-	uint32 pin = port_num - bank*32;
-	uint32 mask = 0x00000001<<pin;
-	uint32 addr_datain = gpio_vir_addr[bank]+GPIO_DATAIN;
-
-	uint32 val = RD_WR_REG32(addr_datain);
-
-	if(val&mask) return 1;
-	else		return 0;
-
-}
-
 uint32 set_input(uint32 port_num)
 {
 	char cmd[80];
@@ -140,15 +128,35 @@ uint32 set_input(uint32 port_num)
 	return 0;
 }
 
+uint32 read_input(uint32 port_num)
+{
+	uint32 bank = port_num/32;
+	uint32 pin = port_num - bank*32;
+	uint32 mask = 0x1<<pin;
+	uint32 addr_datain = gpio_vir_addr[bank]+GPIO_DATAIN;
+
+	uint32 val = RD_WR_REG32(addr_datain);
+
+	if(val&mask)	return 1;
+	else			return 0;
+
+}
+
+
 uint32 write_output(uint32 port_num, uint32 value)
 {
 	uint32 bank = port_num/32;
 	uint32 pin = port_num - bank*32;
-	uint32 mask = 0x00000001<<pin;
+	uint32 mask = 0x1<<pin;
 	uint32 addr_dataout = gpio_vir_addr[bank]+GPIO_DATAOUT;
-	uint32 val = RD_WR_REG32(addr_dataout);
-	if(value) 	RD_WR_REG32(addr_dataout) = val&mask;
-	else		RD_WR_REG32(addr_dataout) = val|~mask;
+	uint32 old_dataout = RD_WR_REG32(addr_dataout);
+	uint32 new_dataout;
+	
+	if(value) 	new_dataout = old_dataout | mask;   
+	else		new_dataout = old_dataout &(~mask);
+	
+	RD_WR_REG32(addr_dataout) = new_dataout;
+	return 0;
 }
 
 uint32 init_LED(void)
