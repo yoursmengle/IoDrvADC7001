@@ -12,6 +12,7 @@ typedef unsigned char uchar;
 #define MAX_AI_NUM 	32
 #define MAX_DI_NUM  	18
 #define MAX_PI_NUM       14
+
 #define MAX_AO_NUM	0
 #define MAX_DO_NUM  	16
 #define MAX_PWM_NUM 	12
@@ -20,7 +21,7 @@ typedef unsigned char uchar;
 #define MAX_IN		(MAX_AI_NUM+MAX_DI_NUM+MAX_PI_NUM)
 #define MAX_OUT		(MAX_AO_NUM+MAX_DO_NUM+MAX_PWM_NUM+MAX_LED_NUM)
 #define MAX_CHANNELS 	(MAX_IN+MAX_OUT)
-#define MAX_DRIVERS 1
+#define MAX_DRIVERS 	1
 
 //data offset in s_ulyIO[]
 #define BASE_AI	0

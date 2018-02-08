@@ -317,7 +317,7 @@ STATICITF RTS_HANDLE CDECL IoDrvCreate(RTS_HANDLE hIIoDrv, CLASSID ClassId, int 
 	strcpy(pInfo->szDriverName, "MyCard");
 	strcpy(pInfo->szDeviceName, "MyCard");
 	strcpy(pInfo->szVendorName, "MyCompany");
-	strcpy(pInfo->szFirmwareVersion, "Rev. 18.2.5");
+	strcpy(pInfo->szFirmwareVersion, "Rev. 3.5.8.11");
 	return (RTS_HANDLE)pInfo;
 }
 

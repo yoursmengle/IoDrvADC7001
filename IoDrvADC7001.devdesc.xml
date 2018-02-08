@@ -370,7 +370,6 @@
           <Default>0</Default>
           <Name name="local:in52">Pulse in 02</Name>
           </Parameter>
-
 	    <Parameter ParameterId="1053" type="std:DWORD">
           <Attributes channel="input" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
           <Default>0</Default>
