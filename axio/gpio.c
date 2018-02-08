@@ -26,6 +26,8 @@
 #define GPIO_DATAOUT 		0x013c
 //#define GPIO_CLEAR_DATAOUT 	0x0190
 //#define GPIO_SET_DATAOUT 	0x0194
+#define GPIO_DIRECTION		0x0134
+
 
 void* gpio_phy_addr[GPIO_BANKS_NUM] = { 	0x44e07000,	0x4804c000,	0x481ac000,	0x481ae000,	0x48320000,	0x48322000 };
 void* gpio_vir_addr[GPIO_BANKS_NUM] = {	NULL,		NULL,		NULL,		NULL,		NULL,		NULL};  //映射后赋值	
@@ -93,38 +95,29 @@ uint32 init_gpio(void)
 	return 0;
 }						
 
-uint32 get_gpio_addr(uint32 gpio_no)
+uint32 set_dir_output(uint32 port_num)
 {
-	return gpio_no*4 + g_gpio_base_addr;
-}
-
-uint32 export_port(uint32 port_num)
-{
-	char cmd[80];
-	sprintf(cmd, "echo %d > /sys/class/gpio/export \n",port_num);
-	FILE *fp = popen(cmd, "r");
-	pclose(fp);
-//		printf(cmd);
-	return 0;
-}
-uint32 set_output(uint32 port_num)
-{
-	char cmd[80];
-
-	sprintf(cmd, "echo out > /sys/class/gpio/gpio%d/direction \n", port_num);
-	FILE *fp = popen(cmd, "r");
-	pclose(fp);
-//		printf(cmd);
+	uint32 bank = port_num/32;
+	uint32 pin = port_num - bank*32;
+	uint32 mask = 0x1<<pin;
+	uint32 addr_direction = gpio_vir_addr[bank]+GPIO_DIRECTION;
+	uint32 old_direction = RD_WR_REG32(addr_direction);
+	uint32 new_direction = old_direction & (~mask);   //clear the bit to enable output
+	RD_WR_REG32(addr_direction) = new_direction;
+	printf("set GPIO port %d output!\n",port_num);
 	return 0;
 }
 
-uint32 set_input(uint32 port_num)
+uint32 set_dir_input(uint32 port_num)
 {
-	char cmd[80];
-	sprintf(cmd, "echo in > /sys/class/gpio/gpio%d/direction \n", port_num);
-	FILE *fp = popen(cmd, "r");
-	pclose(fp);
-//		printf(cmd);
+	uint32 bank = port_num/32;
+	uint32 pin = port_num - bank*32;
+	uint32 mask = 0x1<<pin;
+	uint32 addr_direction = gpio_vir_addr[bank]+GPIO_DIRECTION;
+	uint32 old_direction = RD_WR_REG32(addr_direction);
+	uint32 new_direction = old_direction | mask;   //set the bit to enable input
+	RD_WR_REG32(addr_direction) = new_direction;
+	printf("set GPIO port %d input!\n",port_num);
 	return 0;
 }
 
@@ -168,9 +161,8 @@ uint32 init_LED(void)
 		g_old_LEDs[i] = 0;
 
 		uint32 port_no = LED_GPIO_PORT[i];
-		export_port(port_no);
-		set_output(port_no);
-		write_output(port_no,1);  //gpio high will set the light off
+		set_dir_output(port_no);
+		write_output(port_no,HIGH);  //gpio high will set the light off
 		
 //		port_no+=MAX_LED_NUM;
 //		export_port(port_no);
@@ -182,14 +174,11 @@ uint32 init_LED(void)
 }
 uint32 init_DI(void)
 {
-
-	
 	printf("starting Init the DIs...\n");
 	for(uint32 i = 0; i< MAX_DI_NUM; i++) {
 		g_all_DIs[i] = 0;
 		uint32 port_no = DI_GPIO_PORT[i];
-		export_port(port_no);
-		set_input(port_no);
+		set_dir_input(port_no);
 	}
 
 	return 0;
@@ -202,9 +191,8 @@ uint32 init_DO(void)
 		g_all_DOs[i] = 0;
 		g_old_DOs[i] = 0;
 		uint32 port_no = DO_GPIO_PORT[i];
-		export_port(port_no);
-		set_output(port_no);
-		write_output(port_no,0);
+		set_dir_output(port_no);
+		write_output(port_no,LOW);
 	}
 	return 0;
 }
@@ -265,9 +253,9 @@ uint32 write_LED(uint32 LED_no, uint32 val)
 {
 	uint32 port1 = LED_GPIO_PORT[LED_no];
 	if(val==0) {
-		write_output(port1,1);
+		write_output(port1,HIGH);
 	} else {
-		write_output(port1,0);
+		write_output(port1,LOW);
 	}
 	return 0;
 }

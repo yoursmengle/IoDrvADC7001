@@ -11,8 +11,10 @@
 #define _GPIO_H_
 #include "common.h"
 
-#define DIR_OUT	        (1)
-#define DIR_IN	        (0)
+#define HIGH		(1)
+#define LOW			(0)
+#define DIR_OUT	      (1)
+#define DIR_IN	      (0)
 #define MAX_GPIO 		199
 
 uint32 init_gpio();
