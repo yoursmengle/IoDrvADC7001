@@ -21,16 +21,15 @@
 #include <sys/mman.h>
 #include "gpio.h"
 #include "i2c.h"
+#include "am4378_hw.h"
 
-#define GPIO_DATAIN  		0x0138
-#define GPIO_DATAOUT 		0x013c
-//#define GPIO_CLEAR_DATAOUT 	0x0190
-//#define GPIO_SET_DATAOUT 	0x0194
-#define GPIO_DIRECTION		0x0134
-
-
-void* gpio_phy_addr[GPIO_BANKS_NUM] = { 	0x44e07000,	0x4804c000,	0x481ac000,	0x481ae000,	0x48320000,	0x48322000 };
-void* gpio_vir_addr[GPIO_BANKS_NUM] = {	NULL,		NULL,		NULL,		NULL,		NULL,		NULL};  //映射后赋值	
+void* gpio_phy_addr[GPIO_BANKS_NUM] = {	GPIO_0_BASE_ADDR,\
+							GPIO_1_BASE_ADDR,\
+							GPIO_2_BASE_ADDR,\
+							GPIO_3_BASE_ADDR,\
+							GPIO_4_BASE_ADDR,\
+							GPIO_5_BASE_ADDR };  
+void* gpio_vir_addr[GPIO_BANKS_NUM] = {NULL,NULL,NULL,NULL,NULL,NULL};  //映射后赋值	
 
 uint32 g_all_DIs[MAX_DI_NUM];
 uint32 g_all_DOs[MAX_DO_NUM];
@@ -55,13 +54,9 @@ uint32 DO_GPIO_PORT[MAX_DO_NUM] = {
 						0*32 + 0,	1*32 + 18,	1*32 + 24,	0*32 + 20 \
 					};
 //LED ports  0 ~ 2
-// Drive by 2 channels
-uint32 LED_GPIO_PORT[MAX_LED_NUM] = { 2*32+ 22,	2*32+23,	3*32+1};
-
-//						2*32+ 22,	2*32+23,	3*32+1,\
-//						2*32+25,	2*32+24,	5*32+8
-						
-
+// Every LED was drived by 2 gpio channels
+uint32 LED_GPIO_PORT[MAX_LED_NUM*2] = { 2*32+ 22,	2*32+23,	3*32+1,\
+						   2*32+25,	2*32+24,	5*32+8};
 
 void* g_gpio_base_addr=NULL;
 uint32 g_gpio_mem_fd = 0;
@@ -160,14 +155,15 @@ uint32 init_LED(void)
 		g_all_LEDs[i] = 0;
 		g_old_LEDs[i] = 0;
 
+		//init channel A of every LED
 		uint32 port_no = LED_GPIO_PORT[i];
 		set_dir_output(port_no);
 		write_output(port_no,HIGH);  //gpio high will set the light off
-		
-//		port_no+=MAX_LED_NUM;
-//		export_port(port_no);
-//		set_output(port_no);
-//		output_high(port_no);  //gpio high will set the light off
+
+		//init channel B of every LED
+		port_no+=MAX_LED_NUM;
+		set_dir_output(port_no);
+		write_output(port_no,HIGH); //gpio high will set the light off
 	}
 
 	return 0;

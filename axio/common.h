@@ -8,9 +8,6 @@ typedef unsigned char uchar;
 
 #define RD_WR_REG32(reg) ( *((volatile uint32 *) (reg)) )
 
-#define GPIO_BANKS_NUM	6
-#define GPIO_ALLOC_SIZE  4096
-
 /* Our I/O Area */
 #define MAX_AI_NUM 	32
 #define MAX_DI_NUM  	18
