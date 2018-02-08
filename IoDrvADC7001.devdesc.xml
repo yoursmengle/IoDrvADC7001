@@ -13,7 +13,7 @@
     <DeviceIdentification>
       <Type>40100</Type>
       <Id>1001 0008</Id>
-      <Version>3.5.8.10</Version>
+      <Version>3.5.8.11</Version>
     </DeviceIdentification>
     <DeviceInfo>
       <Name name="local:ModelName">IoDrvADC7001</Name>
@@ -624,7 +624,11 @@
           <Default>0</Default>
           <Name name="local:out30">LED usr</Name>
           </Parameter>
-
+	    <Parameter ParameterId="2031" type="std:DWORD">
+          <Attributes channel="output" download="true" functional="false" offlineaccess="readwrite" onlineaccess="readwrite" />
+          <Default>0</Default>
+          <Name name="local:out31">LED core</Name>
+          </Parameter>
 
 
         <Parameter ParameterId="393218" type="std:STRING">

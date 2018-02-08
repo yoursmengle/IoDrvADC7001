@@ -53,10 +53,10 @@ uint32 DO_GPIO_PORT[MAX_DO_NUM] = {
 						2*32 + 15,	2*32 + 17, 	4*32 + 26,	4*32 + 27, \
 						0*32 + 0,	1*32 + 18,	1*32 + 24,	0*32 + 20 \
 					};
-//LED ports  0 ~ 2
+//LED ports  0 ~ 3
 // Every LED was drived by 2 gpio channels
-uint32 LED_GPIO_PORT[MAX_LED_NUM*2] = { 2*32+ 22,	2*32+23,	3*32+1,\
-						   2*32+25,	2*32+24,	5*32+8};
+uint32 LED_GPIO_PORT[MAX_LED_NUM*2] = { 2*32+ 22,	2*32+23,	3*32+1,	5*32+11,\
+						   2*32+25,	2*32+24,	5*32+8,	5*32+11 };
 
 void* g_gpio_base_addr=NULL;
 uint32 g_gpio_mem_fd = 0;
