@@ -77,11 +77,11 @@ uint32 init_gpio(void)
 	}
 
 	for(uint32 i = 0; i<GPIO_BANKS_NUM; i++) {
-		gpio_vir_addr[i] = mmap(NULL, GPIO_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, g_gpio_mem_fd, gpio_phy_addr[i]);
-		printf("The virtual address of GPIO PORT%d is 0x%08x \n", i, gpio_vir_addr[i]);
+		gpio_vir_addr[i] = mmap(NULL, GPIO_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, g_gpio_mem_fd, (uint32)gpio_phy_addr[i]);
+		printf("The virtual address of GPIO PORT%d is 0x%08x \n", i, (uint32)gpio_vir_addr[i]);
 	}	
 
-	if (gpio_vir_addr[0] == 0xffffffff) 	{
+	if (gpio_vir_addr[0] == (void*)0xffffffff) 	{
 		printf("mmap failed.\n");
 		close(g_gpio_mem_fd);
 		return 0xffffffff;
@@ -90,29 +90,22 @@ uint32 init_gpio(void)
 	return 0;
 }						
 
-uint32 set_dir_output(uint32 port_num)
+uint32 set_dir(uint32 port_num, uint32 dir)
 {
 	uint32 bank = port_num/32;
 	uint32 pin = port_num - bank*32;
 	uint32 mask = 0x1<<pin;
-	uint32 addr_direction = gpio_vir_addr[bank]+GPIO_DIRECTION;
+	uint32 addr_direction = (uint32)gpio_vir_addr[bank]+GPIO_DIRECTION;
 	uint32 old_direction = RD_WR_REG32(addr_direction);
-	uint32 new_direction = old_direction & (~mask);   //clear the bit to enable output
+	uint32 new_direction;
+	if(dir==DIR_OUT) {
+		new_direction = old_direction & (~mask);   //clear the bit to enable output
+		printf("set GPIO port%d for output!\n",port_num);
+	} else {
+		new_direction = old_direction | mask;   //set the bit to enable input
+		printf("set GPIO port%d for input!\n",port_num);
+	}
 	RD_WR_REG32(addr_direction) = new_direction;
-	printf("set GPIO port %d output!\n",port_num);
-	return 0;
-}
-
-uint32 set_dir_input(uint32 port_num)
-{
-	uint32 bank = port_num/32;
-	uint32 pin = port_num - bank*32;
-	uint32 mask = 0x1<<pin;
-	uint32 addr_direction = gpio_vir_addr[bank]+GPIO_DIRECTION;
-	uint32 old_direction = RD_WR_REG32(addr_direction);
-	uint32 new_direction = old_direction | mask;   //set the bit to enable input
-	RD_WR_REG32(addr_direction) = new_direction;
-	printf("set GPIO port %d input!\n",port_num);
 	return 0;
 }
 
@@ -121,7 +114,7 @@ uint32 read_input(uint32 port_num)
 	uint32 bank = port_num/32;
 	uint32 pin = port_num - bank*32;
 	uint32 mask = 0x1<<pin;
-	uint32 addr_datain = gpio_vir_addr[bank]+GPIO_DATAIN;
+	uint32 addr_datain = (uint32)gpio_vir_addr[bank]+GPIO_DATAIN;
 
 	uint32 val = RD_WR_REG32(addr_datain);
 
@@ -136,12 +129,12 @@ uint32 write_output(uint32 port_num, uint32 value)
 	uint32 bank = port_num/32;
 	uint32 pin = port_num - bank*32;
 	uint32 mask = 0x1<<pin;
-	uint32 addr_dataout = gpio_vir_addr[bank]+GPIO_DATAOUT;
+	uint32 addr_dataout = (uint32)gpio_vir_addr[bank]+GPIO_DATAOUT;
 	uint32 old_dataout = RD_WR_REG32(addr_dataout);
 	uint32 new_dataout;
 	
-	if(value) 	new_dataout = old_dataout | mask;   
-	else		new_dataout = old_dataout &(~mask);
+	if(value) 	new_dataout = old_dataout | mask;    //set to High
+	else		new_dataout = old_dataout &(~mask);  //clear to Low
 	
 	RD_WR_REG32(addr_dataout) = new_dataout;
 	return 0;
@@ -157,12 +150,12 @@ uint32 init_LED(void)
 
 		//init channel A of every LED
 		uint32 port_no = LED_GPIO_PORT[i];
-		set_dir_output(port_no);
+		set_dir(port_no,DIR_OUT);
 		write_output(port_no,HIGH);  //gpio high will set the light off
 
 		//init channel B of every LED
-		port_no+=MAX_LED_NUM;
-		set_dir_output(port_no);
+		port_no = LED_GPIO_PORT[MAX_LED_NUM+i];
+		set_dir(port_no,DIR_OUT);
 		write_output(port_no,HIGH); //gpio high will set the light off
 	}
 
@@ -174,7 +167,7 @@ uint32 init_DI(void)
 	for(uint32 i = 0; i< MAX_DI_NUM; i++) {
 		g_all_DIs[i] = 0;
 		uint32 port_no = DI_GPIO_PORT[i];
-		set_dir_input(port_no);
+		set_dir(port_no,DIR_IN);
 	}
 
 	return 0;
@@ -187,7 +180,7 @@ uint32 init_DO(void)
 		g_all_DOs[i] = 0;
 		g_old_DOs[i] = 0;
 		uint32 port_no = DO_GPIO_PORT[i];
-		set_dir_output(port_no);
+		set_dir(port_no,DIR_OUT);
 		write_output(port_no,LOW);
 	}
 	return 0;
@@ -225,9 +218,9 @@ uint32 write_DO(uint32 DO_no, uint32 val)
 {
 	uint32 port_no = DO_GPIO_PORT[DO_no];
 	if(val) {
-		write_output(port_no,1);
+		write_output(port_no,HIGH);
 	} else {
-		write_output(port_no,0);
+		write_output(port_no,LOW);
 	}
 	return 0;
 }
@@ -248,7 +241,7 @@ uint32 write_all_DOs()
 uint32 write_LED(uint32 LED_no, uint32 val)
 {
 	uint32 port1 = LED_GPIO_PORT[LED_no];
-	if(val==0) {
+	if(val==0) {  //drive LED with low signal
 		write_output(port1,HIGH);
 	} else {
 		write_output(port1,LOW);
