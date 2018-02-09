@@ -1,6 +1,7 @@
 #ifndef __AM4378_HW_H__
 #define __AM4378_HW_H__
 
+#define RD_WR_REG32(reg) (*((volatile uint32 *) (reg)))
 
 #define GPIO_BANKS_NUM	6
 #define GPIO_ALLOC_SIZE  4096

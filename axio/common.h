@@ -1,12 +1,12 @@
 #ifndef __COMMON_H_
 #define  __COMMON_H_
 
+#include "am4378_hw.h"
+
 typedef unsigned int uint32;
 typedef int int32;
 typedef unsigned short uint16;
 typedef unsigned char uchar;
-
-#define RD_WR_REG32(reg) ( *((volatile uint32 *) (reg)) )
 
 /* Our I/O Area */
 #define MAX_AI_NUM 	32
