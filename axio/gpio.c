@@ -53,6 +53,9 @@ uint32 DO_GPIO_PORT[MAX_DO_NUM] = {
 						2*32 + 15,	2*32 + 17, 	4*32 + 26,	4*32 + 27, \
 						0*32 + 0,	1*32 + 18,	1*32 + 24,	0*32 + 20 \
 					};
+// SEL DO ports 0~2
+uint32 SEL_GPIO_PORT[MAX_SEL_NUM] = { 4*32+21, 4*32+19, 4*32+17};
+
 //LED ports  0 ~ 3
 // Every LED was drived by 2 gpio channels
 uint32 LED_GPIO_PORT[MAX_LED_NUM*2] = { 2*32+ 22,	2*32+23,	3*32+1,	5*32+11,\
@@ -140,6 +143,24 @@ uint32 write_output(uint32 port_num, uint32 value)
 	return 0;
 }
 
+uint32 set_ai_channel(uint32 chan_no)
+{
+	if(chan_no>7) { //channel 0~7
+		printf("Requested channel is overflow.\n");
+		return 1;
+	}
+	for(uint32 i=0; i< MAX_SEL_NUM; i++) {
+		if(chan_no&0x01){
+			write_output(SEL_GPIO_PORT[i],HIGH);
+		} else {
+			write_output(SEL_GPIO_PORT[i],LOW);
+		}
+		chan_no>>=1;
+	}
+	return 0;
+}
+
+
 uint32 init_LED(void)
 {
 	uint32 i;
@@ -175,14 +196,22 @@ uint32 init_DI(void)
 
 uint32 init_DO(void)
 {
+	uint32 i;
 	printf("starting Init the DOs...\n");
-	for(uint32 i = 0; i< MAX_DO_NUM; i++) {
+	for(i = 0; i< MAX_DO_NUM; i++) {
 		g_all_DOs[i] = 0;
 		g_old_DOs[i] = 0;
 		uint32 port_no = DO_GPIO_PORT[i];
 		set_dir(port_no,DIR_OUT);
 		write_output(port_no,LOW);
 	}
+
+	for(i = 0; i< MAX_SEL_NUM; i++) {
+		uint32 port_no = SEL_GPIO_PORT[i];
+		set_dir(port_no,DIR_OUT);
+		write_output(port_no,LOW);
+	}
+
 	return 0;
 }
 
