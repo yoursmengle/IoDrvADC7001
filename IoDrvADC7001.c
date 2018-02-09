@@ -413,8 +413,7 @@ STATICITF RTS_RESULT CDECL IoDrvUpdateConfiguration(RTS_HANDLE hIoDrv, IoConfigC
 				if (pParameter != NULL) {
 					pParameter->dwDriverSpecific = (RTS_IEC_BYTE *)&s_ulyIO[0][i];
 					//s_ulyIO[0][i] = i+1;
-				}
-				else {
+				} else {
 					break;
 				}
 
