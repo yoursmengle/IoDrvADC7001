@@ -24,7 +24,7 @@
 #define ERR_LED_INIT	(6)
 
 uint32 iosInit(void);
-
+uint32 set_ai_channel(uint32 chan_no);
 uint32 init_AI(void);
 void read_all_AIs(void);
 
