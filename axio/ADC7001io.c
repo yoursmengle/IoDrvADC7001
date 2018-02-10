@@ -25,6 +25,10 @@ uint32 iosInit(void)
 	if(init_gsensor() <= 0) {
 		return ERR_GSENSOR_INIT;
 	}
+
+	if(init_NB_IOT() <=0) {
+		return ERR_NB_IOT_INIT;
+	}
 */
 	return 0;
 }
