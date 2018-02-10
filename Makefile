@@ -16,7 +16,7 @@ CROSS_COMPILE=arm-linux-gnueabi-
 TARGET = IoDrvADC7001
 OTHER_SRC = ./axio/ai.c ./axio/gpio.c ./axio/gsensor.c ./axio/i2c.c ./axio/pwm.c
 OTHER_SRC += ./axio/ao.c ./axio/ADC7001io.c ./axio/pi.c ./axio/tsc_adc.c
- 
+
 INCLUDE += -I./ -I./Components -I./Linux -I./codesys -I/home/jhzhou/sysroot-glibc-linaro-2.21-2017.10-arm-linux-gnueabi/usr/include/
 INCLUDE += -I../kernel_am437x/include/
 
