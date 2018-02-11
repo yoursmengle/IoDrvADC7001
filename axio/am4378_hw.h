@@ -28,6 +28,7 @@ typedef unsigned char uchar;
 
 //ADC0
 #define AI_BASE_ADDR  		(0x44e0d000)
+#define SOC_ADC_TSC_0_REGS	AI_BASE_ADDR
 #define AI_ALLOC_SIZE      	((size_t)0x1000)
 
 
