@@ -1,10 +1,21 @@
 #ifndef __AM4378_HW_H__
 #define __AM4378_HW_H__
 
+#ifndef TRUE
+#define TRUE (1)
+#endif
+
+#ifndef FALSE
+#define FALSE (0)
+#endif
+
 typedef unsigned int uint32;
 typedef int int32;
 typedef unsigned short uint16;
 typedef unsigned char uchar;
+
+#include "hw_control_AM335x.h"
+
 
 #define RD_WR_REG32(reg) (*((volatile uint32 *) (reg)))
 #define HWREG(reg) 	(*((volatile uint32 *) (reg)))
@@ -28,7 +39,6 @@ typedef unsigned char uchar;
 
 //ADC0
 #define AI_BASE_ADDR  		(0x44e0d000)
-#define SOC_ADC_TSC_0_REGS	AI_BASE_ADDR
 #define AI_ALLOC_SIZE      	((size_t)0x1000)
 
 

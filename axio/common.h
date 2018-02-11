@@ -1,5 +1,6 @@
 #ifndef __COMMON_H_
 #define  __COMMON_H_
+
 #include "am4378_hw.h"
 
 /* Our I/O Area */
