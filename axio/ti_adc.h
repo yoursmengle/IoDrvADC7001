@@ -45,12 +45,8 @@
 #define _TSCADC_H_
 
 #include "common.h"
-//#include "hw_tsc_adc_ss.h"
-#define TSC_ADC_SS_IRQSTATUS_RAW_END_OF_SEQUENCE (0x00000002u)
-#define  TSC_ADC_SS_STEPDELAY_SAMPLE_DELAY   (0xFF000000u)
-#define  TSC_ADC_SS_STEPDELAY_SAMPLE_DELAY_SHIFT   (0x00000018u)
 
-
+#include "hw_tsc_adc_ss.h"
 
 #define TSCADC_FORCE_IDLE                      (0)
  
