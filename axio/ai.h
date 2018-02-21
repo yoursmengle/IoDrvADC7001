@@ -10,7 +10,7 @@
 #ifndef __AI_H_
 #define __AI_H_
 #include "common.h"
-#include "tsc_adc.h"
+#include "ti_adc.h"
 
 uint32  init_AI();
 uint32 read_AI(uint32 AI_no);

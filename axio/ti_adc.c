@@ -43,7 +43,7 @@
 
 //#include "hw_types.h"
 
-#include "tsc_adc.h"
+#include "ti_adc.h"
 
 /*************************************************************************
  		API FUNCTION DEFINITIONS
