@@ -74,20 +74,10 @@ uint32 export_port(uint32 port_num)
 	return 0;
 }
 
-uint32 init_gpio(void)
+uint32 init_gpio(uint32 mem_fd)
 {
 	printf("starting Init the GPIO...\n");
-
-	if(g_gpio_mem_fd == 0) {
-		g_gpio_mem_fd = open("/dev/mem", O_RDWR | O_SYNC);
-	}
-	
-	if (g_gpio_mem_fd > 0) 	{
-		printf("Success to open GPIO /dev/mem fd=0x%08x\n", g_gpio_mem_fd);
-	} 	else {
-		printf("Fail to open /dev/mem fd=0x%08x\n", g_gpio_mem_fd);
-		return 0xffffffff;
-	}
+	g_gpio_mem_fd = mem_fd;
 
 	for(uint32 i = 0; i<GPIO_BANKS_NUM; i++) {
 		gpio_vir_addr[i] = mmap(NULL, GPIO_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, g_gpio_mem_fd, (uint32)gpio_phy_addr[i]);
@@ -238,10 +228,10 @@ uint32 init_DO(void)
 	return 0;
 }
 
-uint32 init_DI_DO(void)
+uint32 init_DI_DO(uint32 mem_fd)
 {
 	uint32 i;
-	init_gpio();
+	init_gpio(mem_fd);
 	init_DI();
 	init_DO();
 	init_LED();

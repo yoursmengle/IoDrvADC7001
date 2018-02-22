@@ -17,8 +17,8 @@
 #define DIR_IN	      (0)
 #define MAX_GPIO 		199
 
-uint32 init_gpio();
-uint32 init_DI_DO(void);
+uint32 init_gpio(uint32 mem_fd);
+uint32 init_DI_DO(uint32 mem_fd);
 uint32 read_all_DIs();
 uint32 write_all_DOs();	
 uint32 write_all_LEDs();	

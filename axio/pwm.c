@@ -36,7 +36,7 @@ uint32 PWM_OFFSET[MAX_PWM_NUM] = {
 	0x16*4
 };
 
-uint32 init_PWM(void)
+uint32 init_PWM(uint32 mem_fd)
 {
 	uint32 i;
 	

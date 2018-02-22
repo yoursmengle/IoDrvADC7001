@@ -24,26 +24,6 @@
 #define ERR_LED_INIT	(6)
 
 uint32 iosInit(void);
-uint32 set_ai_channel(uint32 chan_no);
-uint32 init_AI(void);
-void read_all_AIs(void);
-
-uint32 init_PI(void);
-uint32 write_all_PIs(void);
-
-uint32 init_DI_DO(void);
-uint32 read_all_DIs(void);
-uint32 write_all_DOs(void);
-
-uint32 init_AO(void);
-void write_all_AOs(void);
-
-uint32 init_PWM(void);
-void write_all_PWMs(void);
-
-uint32 init_LEDs(void);
-uint32 write_all_LEDs(void);
-
 
 extern uint32 g_all_AIs[MAX_AI_NUM];
 extern uint32 g_all_DIs[MAX_DI_NUM];

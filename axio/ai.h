@@ -12,7 +12,7 @@
 #include "common.h"
 #include "ti_adc.h"
 
-uint32  init_AI();
+uint32  init_AI(uint32 mem_fd);
 uint32 read_AI(uint32 AI_no);
 void read_all_AIs();
 

@@ -1,18 +1,26 @@
 
 #include "IoDrvInc.h"
 
-
 uint32 iosInit(void)
 {
-	if (init_AI() > 0 ) {
-		return ERR_AI_INIT;
+	uint32 mem_fd = open("/dev/mem", O_RDWR | O_SYNC);
+	
+	if (mem_fd > 0) 	{
+		printf("Success to open /dev/mem fd=0x%08x\n", mem_fd);
+	} 	else {
+		printf("Fail to open /dev/mem fd=0x%08x\n", mem_fd);
 	}
 
-	if(init_DI_DO() > 0) {
+
+	if(init_DI_DO(mem_fd) > 0) {
 		return ERR_GPIO_INIT;
 	}
 
-	if(init_PWM() > 0) {
+	if (init_AI(mem_fd) > 0 ) {
+		return ERR_AI_INIT;
+	}
+
+	if(init_PWM(mem_fd) > 0) {
 
 		return ERR_PWM_INIT;
 

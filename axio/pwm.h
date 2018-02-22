@@ -12,10 +12,9 @@
 #include "common.h"
 
 #define PWM_BASE_ADDR  (0x43c00000)
-#define PWM_ALLOC_SIZE      ((size_t)0x10000)
+#define PWM_ALLOC_SIZE ((size_t)0x10000)
 
-uint32 init_PWM(void);
-void un_init_pwm(void);
+uint32 init_PWM(uint32 mem_fd);
 void write_pwm(uint32 pwm_no, uint32 value);
 
 
