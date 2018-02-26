@@ -18,6 +18,7 @@
 #include <string.h> 
 #include <stdint.h>
 #include <errno.h>
+#include <sys/io.h>
 #include <sys/mman.h>
 #include "ai.h"
 #include "gpio.h"
@@ -156,7 +157,8 @@ uint32 init_AI(uint32 mem_fd)
 	g_ai_mem_fd = mem_fd;
 
 	printf("memsize = %d\n", AI_ALLOC_SIZE);
-	g_ai_vir_addr = (uint32)mmap(NULL, AI_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, g_ai_mem_fd, (uint32)AI_BASE_ADDR);
+//	g_ai_vir_addr = (uint32)mmap(NULL, AI_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, g_ai_mem_fd, (uint32)AI_BASE_ADDR);
+	g_ai_vir_addr = (uint32)ioremap(NULL, AI_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, g_ai_mem_fd, (uint32)AI_BASE_ADDR);
 	printf("The virtual address of ADC is 0x%08x \n", g_ai_vir_addr);
 
 	if (g_ai_vir_addr == 0xffffffff) 	{
