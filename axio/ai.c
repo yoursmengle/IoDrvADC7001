@@ -24,6 +24,8 @@
 #include "gpio.h"
 #include "pwm.h"
 
+uint32 g_cur_chan_no = 0;
+uint32 set_ai_channel(uint32 chan_no);
 
 //t_all_input m_t_all_input;
 uint32 g_all_AIs[MAX_AI_NUM];
@@ -76,6 +78,15 @@ void EnableSteps(uint32 base_addr)
     TSCADCConfigureStepEnable(base_addr, 4, 1);
     TSCADCConfigureStepEnable(base_addr, 5, 1);
     TSCADCConfigureStepEnable(base_addr, 6, 1);
+    TSCADCConfigureStepEnable(base_addr, 7, 1);
+    TSCADCConfigureStepEnable(base_addr, 8, 1);
+    TSCADCConfigureStepEnable(base_addr, 9, 1);
+    TSCADCConfigureStepEnable(base_addr, 10, 1);
+    TSCADCConfigureStepEnable(base_addr, 11, 1);
+    TSCADCConfigureStepEnable(base_addr, 12, 1);
+    TSCADCConfigureStepEnable(base_addr, 13, 1);
+    TSCADCConfigureStepEnable(base_addr, 14, 1);
+    TSCADCConfigureStepEnable(base_addr, 15, 1);
 }
 
 /* ADC is configured */
@@ -90,19 +101,23 @@ static void ADCConfigure(uint32 base_addr)
     TSCADCStepIDTagConfig(base_addr, 1);
     /* Disable Write Protection of Step Configuration regs*/
     TSCADCStepConfigProtectionDisable(base_addr);
-    /* Configure step 1~6 for channel 1(AN0)~6(AN5)*/
-    StepConfigure(base_addr, 0, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL1);
-    StepConfigure(base_addr, 1, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL1);
-    StepConfigure(base_addr, 2, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL2);
-    StepConfigure(base_addr, 3, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL2);
-    StepConfigure(base_addr, 4, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL3);
-    StepConfigure(base_addr, 5, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL3);
-    StepConfigure(base_addr, 6, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL4);
-    StepConfigure(base_addr, 7, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL4);
-    StepConfigure(base_addr, 8, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL5);
-    StepConfigure(base_addr, 9, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL5);
-    StepConfigure(base_addr, 10, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL6);
-    StepConfigure(base_addr, 11, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL6);
+
+    /* Configure step 1~12 for channel 1(AN0)~6(AN5)*/
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP1, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL3);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP2, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL3);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP3, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL3);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP4, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL3);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP5, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL5);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP6, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL5);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP7, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL5);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP8, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL5);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP9, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL6);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP10, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL6);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP11, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL6);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP12, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL6);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP13, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL4);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP14, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL2);
+    StepConfigure(base_addr, TSC_ADC_SS_ADCSTAT_STEPID_STEP15, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL1);
 
     /* General purpose inputs */
     TSCADCTSModeConfig(base_addr, TSCADC_GENERAL_PURPOSE_MODE);
@@ -133,33 +148,6 @@ uint32 read_ai_raw(uint32 port_num)
 }
 */
 
-uint32 read_ai_raw(uint32 port_num)
-{	
-	static uint32 raw_data[6];
-	//printf("starting read ADC data......\n");
-	if(port_num==0) {
-		//uint32 ret = TSCADCIntStatusRead(g_ai_vir_addr,TSCADC_END_OF_SEQUENCE_INT);
-		//printf("get status:%d\n", ret);
-		//if(ret > 0) {  //ADC succeed
-			for(uint32 i=0; i<6; i++) {
-				raw_data[i] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
-				raw_data[i] += TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
-				raw_data[i] /=2;
-				
-			}
-			
-		//}
-		EnableSteps(g_ai_vir_addr); //single shot mode, restart ADC after every sequence
-	}
-	
-	if(port_num < 6) {
-		return raw_data[port_num];
-	} else {
-		return port_num+2000;
-	}
-
-}
-
 uint32 init_AI(uint32 mem_fd)
 {
 	uint32 i;
@@ -178,40 +166,95 @@ uint32 init_AI(uint32 mem_fd)
 		return 0xffffffff;
 	}
 	SOC_CONTROL_REGS = g_ai_vir_addr;
-	
+	set_ai_channel(g_cur_chan_no);
 	ADCConfigure(g_ai_vir_addr);
 	return 0;
 }
 
-uint32 read_AI(uint32 AI_no)
-{
-	uint32 val=0;
-	if(AI_no < 6) {
-		return read_ai_raw(AI_no);	
-/*	}else if(AI_no ==6){
-		val = (RD_WR_REG32(g_ai_vir_addr+0x100))&0x0fff; //fifo-0
-		if(val < 4096) return val;
-		else return 4096;
-	}else if(AI_no ==7) {
-		val = (RD_WR_REG32(g_ai_vir_addr+0x200))&0x0fff;  //fifo-1
-		if(val < 4096) return val;
-		else return 4096;
-*/	}else {
-		return AI_no + 2000;
-	}
+uint32 g_raw_data[6];
+void read_ai_raw(void)
+{	
+	g_raw_data[2] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);//discarded
+	g_raw_data[2] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);//discarded
+	g_raw_data[2] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+	g_raw_data[2] += TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+	g_raw_data[2] /=2;
+
+	g_raw_data[4] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);//discarded
+	g_raw_data[4] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);//discarded
+	g_raw_data[4] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+	g_raw_data[4] += TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+	g_raw_data[4] /=2;
+
+	g_raw_data[5] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1); //discarded
+	g_raw_data[5] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);//discarded
+	g_raw_data[5] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+	g_raw_data[5] += TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+	g_raw_data[5] /=2;
+
+	g_raw_data[3] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+	g_raw_data[1] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+	g_raw_data[0] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+
+	EnableSteps(g_ai_vir_addr); //single shot mode, restart ADC after every sequence
 }
 
+void read_AI(void)
+{
+	uint32 val=0;
+	switch(g_cur_chan_no) {
+	case 0:
+		g_all_AIs[4] = g_raw_data[2];
+		g_all_AIs[10] = g_raw_data[4];
+		g_all_AIs[16] = g_raw_data[5];	
+		break;
+	case 1:
+		g_all_AIs[5] = g_raw_data[2];
+		g_all_AIs[11] = g_raw_data[4];
+		g_all_AIs[17] = g_raw_data[5];	
+		break;	
+	case 3:
+		g_all_AIs[3] = g_raw_data[2];
+		g_all_AIs[9] = g_raw_data[4];
+		g_all_AIs[15] = g_raw_data[5];	
+		break;	
+	case 4:
+		g_all_AIs[0] = g_raw_data[2];
+		g_all_AIs[6] = g_raw_data[4];
+		g_all_AIs[12] = g_raw_data[5];	
+		break;
+	case 6:
+		g_all_AIs[1] = g_raw_data[2];
+		g_all_AIs[7] = g_raw_data[4];
+		g_all_AIs[13] = g_raw_data[5];	
+		break;
+	case 7:
+		g_all_AIs[2] = g_raw_data[2];
+		g_all_AIs[8] = g_raw_data[4];
+		g_all_AIs[14] = g_raw_data[5];	
+		break;
+	default:
+		break;		
+	}
+
+	g_all_AIs[18] = g_raw_data[3];
+	g_all_AIs[19] = g_raw_data[1];
+	g_all_AIs[20] = g_raw_data[0];
+}
 
 void read_all_AIs()
 {
 	uint32 i;
 	uint32 val;
-	for (i = 0; i < MAX_AI_NUM; i++) {
-		val = read_AI(i);
-		if(val < 4096) 
-			g_all_AIs[i] = val;
-	}
 
+	read_ai_raw();
+	read_AI();
+
+	g_cur_chan_no++;  //switch channel of ADC
+	if(g_cur_chan_no> 7) {
+		g_cur_chan_no = 0;
+	}
+	set_ai_channel(g_cur_chan_no);
 }
 
 
