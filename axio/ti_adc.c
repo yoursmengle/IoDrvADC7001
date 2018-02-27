@@ -591,10 +591,6 @@ void TSCADCStepIDTagConfig(unsigned int baseAdd, unsigned int enableStepIDTag)
  **/
 void TSCADCModuleStateSet(unsigned int baseAdd, unsigned int enableModule)
 {
-printf("211 0x%08x \n", baseAdd);
-printf("212 0x%08x \n", baseAdd + TSC_ADC_SS_CTRL);
-uint32 reg = HWREG(baseAdd);
-printf("213 0x%08x \n", reg);
 
     RD_WR_REG32(baseAdd + TSC_ADC_SS_CTRL) &= ~TSC_ADC_SS_CTRL_ENABLE;
 

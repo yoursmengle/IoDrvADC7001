@@ -59,6 +59,8 @@ void StepConfigure(uint32 base_addr, unsigned int stepSel, unsigned int fifo,
     /* XNNSW Pin is on, Which pull down the AN1 line*/
     TSCADCTSStepAnalogGroundConfig(base_addr, TSCADC_XNNSW_PIN_ON, TSCADC_YPNSW_PIN_OFF,
                                 TSCADC_YNNSW_PIN_OFF,  TSCADC_WPNSW_PIN_OFF, stepSel);
+     /*TSCADC_EIGHT_SAMPLES_AVG      */
+    TSCADCTSStepAverageConfig(base_addr,stepSel,TSCADC_EIGHT_SAMPLES_AVG);
 
     /* select fifo 0 or 1*/
     TSCADCTSStepFIFOSelConfig(base_addr, stepSel, fifo);
@@ -66,53 +68,57 @@ void StepConfigure(uint32 base_addr, unsigned int stepSel, unsigned int fifo,
     /* Configure ADC to one shot mode */
     TSCADCTSStepModeConfig(base_addr, stepSel,  TSCADC_ONE_SHOT_SOFTWARE_ENABLED);
 }
-/* ADC is configured */
-static void ADCConfigure(uint32 base_addr)
+void EnableSteps(uint32 base_addr)
 {
-printf("111,0x%08x\n",base_addr);
-    TSCADCModuleStateSet(base_addr, TSCADC_MODULE_DISABLE);
-printf("112\n");
-    TSCADCPinMuxSetUp();
-printf("113\n");
-    /* Configures ADC to 3Mhz */
-    TSCADCConfigureAFEClock(base_addr, 24000000, 3000000);
-printf("114\n");
-    /* Enable Transistor bias */
-    TSCADCTSTransistorConfig(base_addr, TSCADC_TRANSISTOR_ENABLE);
-printf("115\n");
-    TSCADCStepIDTagConfig(base_addr, 1);
-printf("116\n");
-    /* Disable Write Protection of Step Configuration regs*/
-    TSCADCStepConfigProtectionDisable(base_addr);
-printf("117\n");
-    /* Configure step 1~6 for channel 1(AN0)~6(AN5)*/
-    StepConfigure(base_addr, 0, TSCADC_FIFO_0, TSCADC_POSITIVE_INP_CHANNEL1);
-    StepConfigure(base_addr, 1, TSCADC_FIFO_0, TSCADC_POSITIVE_INP_CHANNEL2);
-    StepConfigure(base_addr, 2, TSCADC_FIFO_0, TSCADC_POSITIVE_INP_CHANNEL3);
-    StepConfigure(base_addr, 3, TSCADC_FIFO_0, TSCADC_POSITIVE_INP_CHANNEL4);
-    StepConfigure(base_addr, 4, TSCADC_FIFO_0, TSCADC_POSITIVE_INP_CHANNEL5);
-    StepConfigure(base_addr, 5, TSCADC_FIFO_0, TSCADC_POSITIVE_INP_CHANNEL6);
-printf("118\n");
-    /* General purpose inputs */
-    TSCADCTSModeConfig(base_addr, TSCADC_GENERAL_PURPOSE_MODE);
-printf("119\n");
-    /* Enable step 1~6 */
     TSCADCConfigureStepEnable(base_addr, 1, 1);
     TSCADCConfigureStepEnable(base_addr, 2, 1);
     TSCADCConfigureStepEnable(base_addr, 3, 1);
     TSCADCConfigureStepEnable(base_addr, 4, 1);
     TSCADCConfigureStepEnable(base_addr, 5, 1);
     TSCADCConfigureStepEnable(base_addr, 6, 1);
-printf("120\n");
+}
+
+/* ADC is configured */
+static void ADCConfigure(uint32 base_addr)
+{
+    TSCADCModuleStateSet(base_addr, TSCADC_MODULE_DISABLE);
+    TSCADCPinMuxSetUp();
+    /* Configures ADC to 3Mhz */
+    TSCADCConfigureAFEClock(base_addr, 24000000, 3000000);
+    /* Enable Transistor bias */
+    TSCADCTSTransistorConfig(base_addr, TSCADC_TRANSISTOR_ENABLE);
+    TSCADCStepIDTagConfig(base_addr, 1);
+    /* Disable Write Protection of Step Configuration regs*/
+    TSCADCStepConfigProtectionDisable(base_addr);
+    /* Configure step 1~6 for channel 1(AN0)~6(AN5)*/
+    StepConfigure(base_addr, 0, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL1);
+    StepConfigure(base_addr, 1, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL1);
+    StepConfigure(base_addr, 2, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL2);
+    StepConfigure(base_addr, 3, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL2);
+    StepConfigure(base_addr, 4, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL3);
+    StepConfigure(base_addr, 5, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL3);
+    StepConfigure(base_addr, 6, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL4);
+    StepConfigure(base_addr, 7, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL4);
+    StepConfigure(base_addr, 8, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL5);
+    StepConfigure(base_addr, 9, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL5);
+    StepConfigure(base_addr, 10, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL6);
+    StepConfigure(base_addr, 11, TSCADC_FIFO_1, TSCADC_POSITIVE_INP_CHANNEL6);
+
+    /* General purpose inputs */
+    TSCADCTSModeConfig(base_addr, TSCADC_GENERAL_PURPOSE_MODE);
+
+    /* Enable step 1~6 */
+    EnableSteps(base_addr);
+
     /* Clear the status of all interrupts */
     CleanUpInterrupts();
-printf("121\n");
+
     /* End of sequence interrupt is enable */
  //   TSCADCEventInterruptEnable(SOC_ADC_TSC_0_REGS, TSCADC_END_OF_SEQUENCE_INT);
 
     /* Enable the TSC_ADC_SS module*/
     TSCADCModuleStateSet(base_addr, TSCADC_MODULE_ENABLE);
-printf("122\n");
+
 }
 /*
 uint32 read_ai_raw(uint32 port_num)
@@ -130,14 +136,20 @@ uint32 read_ai_raw(uint32 port_num)
 uint32 read_ai_raw(uint32 port_num)
 {	
 	static uint32 raw_data[6];
-
+	//printf("starting read ADC data......\n");
 	if(port_num==0) {
-		uint32 ret = TSCADCIntStatusRead(g_ai_vir_addr,TSCADC_END_OF_SEQUENCE_INT);
-		if(ret > 0) {  //ADC succeed
+		//uint32 ret = TSCADCIntStatusRead(g_ai_vir_addr,TSCADC_END_OF_SEQUENCE_INT);
+		//printf("get status:%d\n", ret);
+		//if(ret > 0) {  //ADC succeed
 			for(uint32 i=0; i<6; i++) {
-				raw_data[i] = TSCADCFIFOADCDataRead(g_ai_vir_addr,0);
+				raw_data[i] = TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+				raw_data[i] += TSCADCFIFOADCDataRead(g_ai_vir_addr,1);
+				raw_data[i] /=2;
+				
 			}
-		}
+			
+		//}
+		EnableSteps(g_ai_vir_addr); //single shot mode, restart ADC after every sequence
 	}
 	
 	if(port_num < 6) {
@@ -157,8 +169,7 @@ uint32 init_AI(uint32 mem_fd)
 	g_ai_mem_fd = mem_fd;
 
 	printf("memsize = %d\n", AI_ALLOC_SIZE);
-//	g_ai_vir_addr = (uint32)mmap(NULL, AI_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, g_ai_mem_fd, (uint32)AI_BASE_ADDR);
-	g_ai_vir_addr = (uint32)ioremap(NULL, AI_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, g_ai_mem_fd, (uint32)AI_BASE_ADDR);
+	g_ai_vir_addr = (uint32)mmap(NULL, AI_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, g_ai_mem_fd, (uint32)AI_BASE_ADDR);
 	printf("The virtual address of ADC is 0x%08x \n", g_ai_vir_addr);
 
 	if (g_ai_vir_addr == 0xffffffff) 	{
