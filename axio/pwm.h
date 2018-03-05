@@ -16,7 +16,7 @@
 
 uint32 init_PWM(uint32 mem_fd);
 void write_pwm(uint32 pwm_no, uint32 value);
-
+void write_all_PWMs(void);
 
 //extern uchar* g_pwm_base_addr;
 

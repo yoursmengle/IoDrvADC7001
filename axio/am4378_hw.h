@@ -18,7 +18,7 @@ typedef unsigned char uchar;
 
 
 #define RD_WR_REG32(reg) (*((volatile uint32 *) (reg)))
-#define HWREG(reg) 	(*((volatile uint32 *) (reg)))
+//#define HWREG(reg) 	(*((volatile uint32 *) (reg)))
 
 //GPIO 
 #define GPIO_BANKS_NUM	6
@@ -131,5 +131,11 @@ typedef unsigned char uchar;
 
 #define MAX_12BIT                       ((1 << 12) - 1)
 
+
+#define SOC_PWMSS3_REGS                     (0x48306000)
+#define SOC_PWMSS4_REGS                     (0x48308000)
+#define SOC_PWMSS5_REGS                     (0x4830a000)
+
+#define EHRPWM_OFFSET				(0x0200)
 
 #endif //__AM4378_HW_H__

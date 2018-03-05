@@ -43,6 +43,7 @@
 
 //#include "hw_types.h"
 #include <stdio.h>
+#include "hw_types.h"
 #include "ti_adc.h"
 
 extern uint32 SOC_CONTROL_REGS;
