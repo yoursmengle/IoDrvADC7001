@@ -180,7 +180,7 @@ void PWMSSTBClkEnable(unsigned int instance)
  * \return  None.
  *
  */
-void PWMSSModuleClkConfig(unsigned int instanceNum)
+void PWMSSModuleClkConfig(uint32 addr, unsigned int instanceNum)
 {
     HWREG(SOC_PRCM_REGS + CM_PER_L3S_CLKSTCTRL) |= 
                              CM_PER_L3S_CLKSTCTRL_CLKTRCTRL_SW_WKUP;

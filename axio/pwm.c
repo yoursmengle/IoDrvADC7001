@@ -27,8 +27,8 @@
 
 static void EHRPWMConfigure(void);
 uint32 g_all_PWMs[MAX_PWM_NUM];
-uchar* g_pwm_base_addr=NULL;
-int g_pwm_mem_fd = 0; 
+uint32 g_pwm_vir_addr=0;
+
 uint32 PWM_OFFSET[MAX_PWM_NUM] = {
 	0x10*4,
 	0x11*4,
@@ -41,11 +41,16 @@ uint32 PWM_OFFSET[MAX_PWM_NUM] = {
 
 uint32 init_PWM(uint32 mem_fd)
 {
-	uint32 i;
+    uint32 i;
 	
-	printf("Starting pwm init.\n");
+    printf("Starting pwm init.\n");
+    printf("memsize = %d\n", AI_ALLOC_SIZE);
+    g_pwm_vir_addr = (uint32)mmap(NULL, AI_ALLOC_SIZE, PROT_READ+PROT_WRITE, MAP_SHARED, mem_fd,(uint32)PWM_BASE_ADDR);
+    printf("The virtual address of pwm is 0x%08x \n", g_ai_vir_addr);
 
-    PWMSSModuleClkConfig(2);
+    PWMSSModuleClkConfig(g_pwm_vir_addr, 0);
+    PWMSSModuleClkConfig(g_pwm_vir_addr, 1);
+    PWMSSModuleClkConfig(g_pwm_vir_addr, 2);
 
     EPWM2PinMuxSetup();
 
