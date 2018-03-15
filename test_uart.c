@@ -192,30 +192,10 @@ int set_uart(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parity
          perror("com set error!\n");    
          return (FALSE);   
      }  
+    printf("set port OK!\n");
     return (TRUE);   
 }  
-/******************************************************************* 
-* 名称：                init_uart() 
-* 功能：                串口初始化 
-* 入口参数：        fd       :  文件描述符    
-*               speed  :  串口速度 
-*               flow_ctrl  数据流控制 
-*               databits   数据位   取值为 7 或者8 
-*                           stopbits   停止位   取值为 1 或者2 
-*                           parity     效验类型 取值为N,E,O,,S 
-*                       
-* 出口参数：        正确返回为1，错误返回为0 
-*******************************************************************/  
-int init_uart(int fd, int speed,int flow_ctrl,int databits,int stopbits,int parity)  
-{  
-    int err;  
-    //设置串口数据帧格式  
-    if (set_uart(fd,19200,0,8,1,'N') == FALSE) {                                                           
-        return FALSE;  
-    }  else  {  
-       return  TRUE;  
-     }  
-}  
+ 
    
 /******************************************************************* 
 * 名称：                  recv_uart 
@@ -235,14 +215,14 @@ int recv_uart(int fd, char *rcv_buf,int data_len)
     FD_ZERO(&fs_read);  
     FD_SET(fd,&fs_read);  
      
-    time.tv_sec = 10;  
-    time.tv_usec = 0;  
+    time.tv_sec = 0;  
+    time.tv_usec = 100000;  
      
     //使用select实现串口的多路通信  
     fs_sel = select(fd+1,&fs_read,NULL,NULL,&time);  
     if(fs_sel)  {  
        len = read(fd,rcv_buf,data_len);  
-       printf("I am right!(version1.2) len = %d fs_sel = %d\n",len,fs_sel);  
+       //printf("I am right!(version1.2) len = %d fs_sel = %d\n",len,fs_sel);  
        return len;  
     }  else  {  
        printf("Sorry,I am wrong!");  
@@ -312,7 +292,7 @@ int main(int argc, char **argv)
     int len;                          
     int i;  
     char rcv_buf[100];    
-    char uart_dev[20] = "/dev/ttyS0";     
+    char uart_dev[20] = "/dev/ttyO1";     
     char send_buf[20]="tiger john";  
     char kb_buf[20];
 
@@ -321,16 +301,14 @@ int main(int argc, char **argv)
      }  
     printf("Using uart port: %s\n", uart_dev);
 
-    fd = open_uart(argv[1]); //打开串口，返回文件描述符  
+    fd = open_uart(uart_dev); //打开串口，返回文件描述符  
     if(fd == FALSE) {
         printf("Failed to open uart port: %s \n", uart_dev);
         return FALSE;
     }
    
-   do{  
-       err = init_uart(fd,9600,0,8,1,'N');  
-       printf("Set Port Exactly!\n");  
-    }while(FALSE == err || FALSE == fd);  
+    int ret = set_uart(fd,9600,0,8,1,'N');  
+    if(FALSE == ret) return FALSE;
 
     while (1){
         len = recv_uart(fd, rcv_buf,99);  
