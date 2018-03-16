@@ -10,7 +10,6 @@
 #include<errno.h>      /*错误号定义*/  
 #include<string.h>  
 #include <sys/time.h>  
-
    
 //宏定义  
 #define FALSE  -1  
@@ -29,35 +28,24 @@ int open_uart(char* port)
         printf("Can't Open Serial Port:%s", port);  
         return(FALSE);  
       }  
-     //恢复串口为阻塞状态                                 
-    if(fcntl(fd, F_SETFL, 0) < 0) {  
-        printf("fcntl failed!\n");  
-        return(FALSE);  
-    } else {  
-        printf("fcntl=%d\n",fcntl(fd, F_SETFL,0));  
-     }  
-     //测试是否为终端设备      
-    if(0 == isatty(STDIN_FILENO)) {  
-        printf("standard input is not a terminal device\n");  
-        return(FALSE);  
-    } else {  
-        printf("isatty success!\n");  
-     }                
-    printf("fd->open=%d\n",fd);  
+               
+    printf("fd->open: %d\n",fd);  
     return fd;  
 }  
-/******************************************************************* 
-* 名称：                close_uart 
-* 功能：                关闭串口
-* 入口参数：        fd    :文件描述符     
-* 出口参数：        void 
-*******************************************************************/  
-   
-void close_uart(int fd)  
-{  
-    close(fd);  
-}  
-   
+
+void uart_noblock(int fd)
+{
+    int flags = fcntl(fd,F_GETFL,0);
+    flags |= O_NONBLOCK;
+    fcntl(fd,F_SETFL,flags);
+}
+
+void uart_block(int fd)
+{
+    int flags = fcntl(fd,F_GETFL,0);
+    flags &= ~O_NONBLOCK;
+    fcntl(fd,F_SETFL,flags);  
+}
 /******************************************************************* 
 * 名称：                set_uart 
 * 功能：                设置串口数据位，停止位和效验位 
@@ -195,61 +183,7 @@ int set_uart(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parity
     printf("set port OK!\n");
     return (TRUE);   
 }  
- 
    
-/******************************************************************* 
-* 名称：                  recv_uart 
-* 功能：                接收串口数据 
-* 入口参数：        fd                  :文件描述符     
-*                              rcv_buf     :接收串口中数据存入rcv_buf缓冲区中 
-*                              data_len    :一帧数据的长度 
-* 出口参数：        正确返回为1，错误返回为0 
-*******************************************************************/  
-int recv_uart(int fd, char *rcv_buf,int data_len)  
-{  
-    int len,fs_sel;  
-    fd_set fs_read;  
-     
-    struct timeval time;  
-     
-    FD_ZERO(&fs_read);  
-    FD_SET(fd,&fs_read);  
-     
-    time.tv_sec = 0;  
-    time.tv_usec = 100000;  
-     
-    //使用select实现串口的多路通信  
-    fs_sel = select(fd+1,&fs_read,NULL,NULL,&time);  
-    if(fs_sel)  {  
-       len = read(fd,rcv_buf,data_len);  
-       //printf("I am right!(version1.2) len = %d fs_sel = %d\n",len,fs_sel);  
-       return len;  
-    }  else  {  
-       printf("Sorry,I am wrong!");  
-       return FALSE;  
-     }       
-}  
-/******************************************************************** 
-* 名称：                  send_uart 
-* 功能：                发送数据 
-* 入口参数：        fd                  :文件描述符     
-*                              send_buf    :存放串口发送数据 
-*                              data_len    :一帧数据的个数 
-* 出口参数：        正确返回为1，错误返回为0 
-*******************************************************************/  
-int send_uart(int fd, char *send_buf,int data_len)  
-{  
-    int len = 0;  
-     
-    len = write(fd,send_buf,data_len);  
-    if (len == data_len )  {  
-       return len;  
-    } else{  
-       tcflush(fd,TCOFLUSH);  
-       return FALSE;  
-     }  
-}  
-
 /* Detect the press of keyboard
 */
 static __inline  
@@ -293,7 +227,6 @@ int main(int argc, char **argv)
     int i;  
     char rcv_buf[100];    
     char uart_dev[20] = "/dev/ttyO1";     
-    char send_buf[20]="tiger john";  
     char kb_buf[20];
 
     if(argc = 2) {  
@@ -311,15 +244,17 @@ int main(int argc, char **argv)
     if(FALSE == ret) return FALSE;
 
     while (1){
-        len = recv_uart(fd, rcv_buf,99);  
+        uart_noblock(fd);
+        len = read(fd,rcv_buf,99);  
         if(len > 0) {
             printf(rcv_buf);
          }
        if(kbhit()) {
             kb_buf[0]=getchar(); 
             kb_buf[1] = 0;  
-            printf(kb_buf);
-            send_uart(fd,kb_buf,1);
+            //printf(kb_buf);
+            uart_block(fd);
+            write(fd,kb_buf,1);
         }         
 
     }    
