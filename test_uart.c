@@ -10,6 +10,62 @@
 #include<errno.h>      /*错误号定义*/  
 #include<string.h>  
 #include <sys/time.h>  
+#include <string.h>
+
+int export_port(unsigned int port_num)
+{
+	char cmd[80];
+      char file[80] = "/sys/class/gpio/gpio111/value";   //for port111 test only
+    
+      int file_ok = access(file, F_OK);
+      if(file_ok != -1) {
+          printf("the port has exported!\n");
+          return -1;
+        }
+	sprintf(cmd, "echo %d > /sys/class/gpio/export \n",port_num);
+	FILE *fp = popen(cmd, "r");
+	pclose(fp);
+	return 0;
+}
+
+int output_high(unsigned int port_num)
+{
+	char cmd[80];
+	sprintf(cmd, "echo out > /sys/class/gpio/gpio%d/direction \n", port_num);
+	FILE *fp = popen(cmd, "r");
+	pclose(fp);
+
+	sprintf(cmd, "echo 1 > /sys/class/gpio/gpio%d/value \n", port_num);
+	fp = popen(cmd, "r");
+	pclose(fp);
+	return 0;
+}
+
+int output_low(unsigned int port_num)
+{
+	char cmd[80];
+	sprintf(cmd, "echo out > /sys/class/gpio/gpio%d/direction \n", port_num);
+	FILE *fp = popen(cmd, "r");
+	pclose(fp);
+
+	sprintf(cmd, "echo 0 > /sys/class/gpio/gpio%d/value \n", port_num);
+	fp = popen(cmd, "r");
+	pclose(fp);
+	return 0;
+}
+
+#define PORT_ENA_NB05  111
+void enable_nb05(void)
+{
+	export_port(PORT_ENA_NB05);
+	output_high(PORT_ENA_NB05);
+}
+
+void disable_nb05(void)
+{
+	export_port(PORT_ENA_NB05);
+	output_low(PORT_ENA_NB05);
+}
    
 //宏定义  
 #define FALSE  -1  
@@ -23,13 +79,13 @@
 *******************************************************************/  
 int open_uart(char* port)  
 {  
-    int fd = open( port, O_RDWR|O_NOCTTY|O_NDELAY);  
+    int fd = open( port, O_RDWR);    //|O_NOCTTY|O_NDELAY
     if (FALSE == fd) {  
         printf("Can't Open Serial Port:%s", port);  
         return(FALSE);  
       }  
                
-    printf("fd->open: %d\n",fd);  
+    printf("%s is ready: fd= %d\n",port,fd);  
     return fd;  
 }  
 
@@ -76,9 +132,10 @@ int set_uart(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parity
     
     //设置串口输入波特率和输出波特率  
     for ( i= 0;  i < sizeof(speed_arr) / sizeof(int);  i++)  {  
-        if(speed == name_arr[i])  {               
+        if(speed == name_arr[i]) {               
             cfsetispeed(&options, speed_arr[i]);   
             cfsetospeed(&options, speed_arr[i]);    
+            printf("set baudrit to: %d\n", speed);
           }  
      }       
      
@@ -91,13 +148,16 @@ int set_uart(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parity
     switch(flow_ctrl) {  
     case 0 ://不使用流控制  
               options.c_cflag &= ~CRTSCTS;  
+              printf("no flow ctrl\n");
               break;     
         
     case 1 ://使用硬件流控制  
               options.c_cflag |= CRTSCTS;  
+              printf("hardware flow ctrl\n");
               break;  
     case 2 ://使用软件流控制  
               options.c_cflag |= IXON | IXOFF | IXANY;  
+              printf("software flow ctrl\n");
               break;  
      default:
             break;
@@ -122,28 +182,34 @@ int set_uart(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parity
            fprintf(stderr,"Unsupported data size\n");  
            return (FALSE);   
     }  
+    printf("set databits to: %d\n",databits);
+
     //设置校验位  
     switch (parity)  {    
     case 'n':  
     case 'N': //无奇偶校验位。  
                  options.c_cflag &= ~PARENB;   
-                 options.c_iflag &= ~INPCK;      
+                 options.c_iflag &= ~INPCK;   
+                 printf("No parity\n");   
                  break;   
     case 'o':    
     case 'O'://设置为奇校验      
                  options.c_cflag |= (PARODD | PARENB);   
-                 options.c_iflag |= INPCK;               
+                 options.c_iflag |= INPCK;       
+                 printf("odd parity\n");           
                  break;   
     case 'e':   
     case 'E'://设置为偶校验    
                  options.c_cflag |= PARENB;         
                  options.c_cflag &= ~PARODD;         
-                 options.c_iflag |= INPCK;        
+                 options.c_iflag |= INPCK;      
+                 printf("even parity\n");     
                  break;  
     case 's':  
     case 'S': //设置为空格   
                  options.c_cflag &= ~PARENB;  
-                 options.c_cflag &= ~CSTOPB;  
+                 options.c_cflag &= ~CSTOPB; 
+                 printf("set with space \n");    
                  break;   
     default:    
                  fprintf(stderr,"Unsupported parity\n");      
@@ -153,9 +219,11 @@ int set_uart(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parity
     switch (stopbits)  {    
     case 1:     
            options.c_cflag &= ~CSTOPB; 
+           printf("stopbits = 1\n");   
            break;   
     case 2:     
-           options.c_cflag |= CSTOPB; 
+           options.c_cflag |= CSTOPB;
+           printf("stopbits = 2\n");
            break;  
     default:     
            fprintf(stderr,"Unsupported stop bits\n");   
@@ -214,9 +282,8 @@ int kbhit(void)
                 return 0;  
         return 0;  
 }  
-
    
-/*uasge: testuart /dev/ttySx
+/*uasge: testuart /dev/ttyOx
  * print chars from the port ttySx on terminal, and send chars which user type in terminal to the port
 */   
 int main(int argc, char **argv)  
@@ -227,11 +294,17 @@ int main(int argc, char **argv)
     int i;  
     char rcv_buf[100];    
     char uart_dev[20] = "/dev/ttyO1";     
-    char kb_buf[20];
+    char kb_buf[20]="AT+NRB\r\n";
+    int speed = 9600;
 
-    if(argc = 2) {  
+    if(argc >1) {  
          strcpy(uart_dev, argv[1]);         
      }  
+    if(argc >2) {  
+         speed = atoi(argv[2]);         
+     }
+
+
     printf("Using uart port: %s\n", uart_dev);
 
     fd = open_uart(uart_dev); //打开串口，返回文件描述符  
@@ -240,15 +313,39 @@ int main(int argc, char **argv)
         return FALSE;
     }
    
-    int ret = set_uart(fd,9600,0,8,1,'N');  
+    int ret = set_uart(fd,speed,0,8,1,'N');  
     if(FALSE == ret) return FALSE;
 
+    enable_nb05();
+    len = write(fd, kb_buf, strlen(kb_buf));
+    printf("write %d bytes to %s \n", len, uart_dev);
+
+    for(i=0; i<100000; i++);
+    
+    uart_noblock(fd);
+    len = read(fd,rcv_buf,99);  
+    printf("rec %d bytes from %s \n", len, uart_dev);
+
+    if(len > 0) {
+        printf(rcv_buf);
+     }
+    
+
     while (1){
-        uart_noblock(fd);
+        //uart_noblock(fd);
         len = read(fd,rcv_buf,99);  
+        printf("rec %d bytes from %s \n", len, uart_dev);
         if(len > 0) {
             printf(rcv_buf);
          }
+
+       strcpy(kb_buf, "at+cgmr\r\n");
+
+       for(i=0; i<100000; i++);
+       len = write(fd, kb_buf, strlen(kb_buf));
+       printf("write %d bytes to %s \n", len, uart_dev);
+       for(i=0; i<1000000; i++);
+/*
        if(kbhit()) {
             kb_buf[0]=getchar(); 
             kb_buf[1] = 0;  
@@ -256,7 +353,7 @@ int main(int argc, char **argv)
             uart_block(fd);
             write(fd,kb_buf,1);
         }         
-
+*/
     }    
 
 }  
