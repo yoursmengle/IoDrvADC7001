@@ -10,7 +10,7 @@
 #include<errno.h>      /*错误号定义*/  
 #include<string.h>  
 #include <sys/time.h>  
-#include <string.h>
+
 
 int export_port(unsigned int port_num)
 {
@@ -229,7 +229,8 @@ int set_uart(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parity
            fprintf(stderr,"Unsupported stop bits\n");   
            return (FALSE);  
     }  
-     
+
+     /*
   //修改输出模式，原始数据输出  
   options.c_oflag &= ~OPOST;  
     
@@ -237,17 +238,19 @@ int set_uart(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parity
 //options.c_lflag &= ~(ISIG | ICANON);  
      
     //设置等待时间和最小接收字符  
-    options.c_cc[VTIME] = 1; /* 读取一个字符等待1*(1/10)s */    
-    options.c_cc[VMIN] = 1; /* 读取字符的最少个数为1 */  
+    options.c_cc[VTIME] = 1; // 读取一个字符等待1*(1/10)s     
+    options.c_cc[VMIN] = 1; // 读取字符的最少个数为1   
      
     //如果发生数据溢出，接收数据，但是不再读取 刷新收到的数据但是不读  
     tcflush(fd,TCIFLUSH);  
-     
+     */
+
     //激活配置 (将修改后的termios数据设置到串口中）  
     if (tcsetattr(fd,TCSANOW,&options) != 0)  {  
          perror("com set error!\n");    
          return (FALSE);   
      }  
+
     printf("set port OK!\n");
     return (TRUE);   
 }  
@@ -296,14 +299,15 @@ int main(int argc, char **argv)
     char uart_dev[20] = "/dev/ttyO1";     
     char kb_buf[20]="AT+NRB\r\n";
     int speed = 9600;
+    printf("Usage: %s [dev_name] [baud_rate]\n", argv[0]);
 
     if(argc >1) {  
          strcpy(uart_dev, argv[1]);         
      }  
+
     if(argc >2) {  
          speed = atoi(argv[2]);         
      }
-
 
     printf("Using uart port: %s\n", uart_dev);
 
@@ -332,11 +336,11 @@ int main(int argc, char **argv)
     
 
     while (1){
-        //uart_noblock(fd);
-        len = read(fd,rcv_buf,99);  
-        printf("rec %d bytes from %s \n", len, uart_dev);
-        if(len > 0) {
-            printf(rcv_buf);
+       //uart_noblock(fd);
+       len = read(fd,rcv_buf,99);  
+       printf("rec %d bytes from %s \n", len, uart_dev);
+       if(len > 0) {
+           printf(rcv_buf);
          }
 
        strcpy(kb_buf, "at+cgmr\r\n");
