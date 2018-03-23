@@ -56,11 +56,13 @@ void disable_nb05(void)
 	export_port(PORT_ENA_NB05);
 	output_low(PORT_ENA_NB05);
 }
-   
+
+/*   
 //宏定义  
 #define FALSE  -1  
 #define TRUE   0  
-   
+*/
+ 
 /******************************************************************* 
 * 名称：                  open_uart 
 * 功能：                打开串口并返回串口设备文件描述 

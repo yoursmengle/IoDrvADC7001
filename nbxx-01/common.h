@@ -12,35 +12,36 @@
 #include <string.h>  
 #include <sys/time.h>  
 
+#include "bsp_nbxx_01.h"
 #include "app_config.h"
 #include "nbxx_01_app.h"
 #include "nbxx_01_udp.h"
 #include "lierda_server.h"
 
 
-typedef unsigned char uint8_t
-typedef unsigned short uint16_t
-typedef unsigned int uint32_t
-typedef int int32_t
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+typedef int int32_t;
 
 #ifndef bool
-typedef unsigned char bool
+typedef unsigned char bool;
 #endif
 
 #ifndef TRUE
-#define TRUE (1)
+#define TRUE (0)
 #endif
 
 #ifndef FALSE
-#define FALSE (0)
+#define FALSE (-1)
 #endif
 
 #ifndef true
-#define true (1)
+#define true (0)
 #endif
 
 #ifndef false
-#define false (0)
+#define false (-1)
 #endif
 
 #endif //__COMMON_H_NBXX_01

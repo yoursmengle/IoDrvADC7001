@@ -3,7 +3,7 @@ ARCH=arm
 CROSS_COMPILE=arm-linux-gnueabi-
 
 TARGET = test_nbIot
-OTHER_SRC = ./test_uart.c ./app_config.c ./nbxx_01_app.c  ./lierda_server.c ./nbxx_01_udp.c
+OTHER_SRC = ./test_uart.c ./app_config.c ./nbxx_01_app.c  ./lierda_server.c ./bsp_nbxx_01.c
 
 INCLUDE += -I./ -I/home/jhzhou/sysroot-glibc-linaro-2.21-2017.10-arm-linux-gnueabi/usr/include/
 INCLUDE += -I../kernel_am437x/include/
