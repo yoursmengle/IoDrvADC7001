@@ -11,6 +11,8 @@
 #ifndef __NBXX_01_APP_H
 #define __NBXX_01_APP_H
 
+#include "common.h"
+
 #ifdef __cplusplus
  extern "C" {
 #endif
