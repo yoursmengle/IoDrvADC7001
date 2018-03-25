@@ -6,8 +6,9 @@
 int export_port(unsigned int port_num)
 {
 	char cmd[80];
-      char file[80] = "/sys/class/gpio/gpio111/value";   //for port111 test only
-    
+      char file[80]; //= "/sys/class/gpio/gpio111/value";  
+      sprintf(file, "/sys/class/gpio/gpio%d/value",port_num);
+ 
       int file_ok = access(file, F_OK);
       if(file_ok != -1) {
           printf("the port has exported!\n");
@@ -51,6 +52,16 @@ void enable_nb05(void)
     export_port(PORT_ENA_NB05);
     output_high(PORT_ENA_NB05);
     printf("Set nb05_01 power ON.\n");
+}
+
+#define PORT_RST_NB05  112
+void reset_nb05(void)
+{
+    export_port(PORT_RST_NB05);
+    output_high(PORT_RST_NB05);
+    for(int i=0;i<20000;i++);
+    output_low(PORT_RST_NB05);
+    printf("nb05_01 has been reseted!\n");
 }
 
 void disable_nb05(void)
@@ -316,6 +327,7 @@ int main(int argc, char **argv)
     if(FALSE == ret) return FALSE;
 
     enable_nb05();
+    reset_nb05();
 
     strcpy(kb_buf,"AT+CFUN=0\r\n");
     len = write(fd, kb_buf, strlen(kb_buf));
