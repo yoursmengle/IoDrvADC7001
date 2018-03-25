@@ -11,13 +11,13 @@
 #include <errno.h>      /*错误号定义*/  
 #include <string.h>  
 #include <sys/time.h>  
-
+/*
 #include "bsp_nbxx_01.h"
 #include "app_config.h"
 #include "nbxx_01_app.h"
 #include "nbxx_01_udp.h"
 #include "lierda_server.h"
-
+*/
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;

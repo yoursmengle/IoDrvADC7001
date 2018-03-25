@@ -1,6 +1,7 @@
    
 //串口相关的头文件  
 #include "common.h"
+#include "nbxx_01.h"
 
 int export_port(unsigned int port_num)
 {
@@ -47,14 +48,16 @@ int output_low(unsigned int port_num)
 #define PORT_ENA_NB05  111
 void enable_nb05(void)
 {
-	export_port(PORT_ENA_NB05);
-	output_high(PORT_ENA_NB05);
+    export_port(PORT_ENA_NB05);
+    output_high(PORT_ENA_NB05);
+    printf("Set nb05_01 power ON.\n");
 }
 
 void disable_nb05(void)
 {
-	export_port(PORT_ENA_NB05);
-	output_low(PORT_ENA_NB05);
+    export_port(PORT_ENA_NB05);
+    output_low(PORT_ENA_NB05);
+    printf("Set nb05_01 power Off.\n");
 }
 
 /*   
@@ -127,7 +130,7 @@ int set_uart(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parity
         if(speed == name_arr[i]) {               
             cfsetispeed(&options, speed_arr[i]);   
             cfsetospeed(&options, speed_arr[i]);    
-            printf("set baudrit to: %d\n", speed);
+            printf("set baudrate to: %d\n", speed);
           }  
      }       
      
@@ -291,7 +294,7 @@ int main(int argc, char **argv)
     char uart_dev[20] = "/dev/ttyO1";     
     char kb_buf[20]="AT+NRB\r\n";
     int speed = 9600;
-    printf("Usage: %s [dev_name] [baud_rate]\n", argv[0]);
+    printf("Usage: %s [dev_name/default:/dev/ttyO1] [baud_rate/default:9600]\n", argv[0]);
 
     if(argc >1) {  
          strcpy(uart_dev, argv[1]);         
@@ -313,24 +316,32 @@ int main(int argc, char **argv)
     if(FALSE == ret) return FALSE;
 
     enable_nb05();
+
+    strcpy(kb_buf,"AT+CFUN=0\r\n");
     len = write(fd, kb_buf, strlen(kb_buf));
     printf("write %d bytes to %s \n", len, uart_dev);
 
-    for(i=0; i<100000; i++);
-    
-    uart_noblock(fd);
-    len = read(fd,rcv_buf,99);  
-    printf("rec %d bytes from %s \n", len, uart_dev);
 
-    if(len > 0) {
-        printf(rcv_buf);
-     }
-    
+    for(i=0; i<100000; i++);
+    uart_noblock(fd);
+
+    for(i=0; i< 1000; i++) {
+	  len = read(fd,rcv_buf,99);  
+        if(len != -1)
+	    printf("rec %d bytes from %s \n", len, uart_dev);
+
+	  if(len > 0) {
+	    printf(rcv_buf);
+	  }
+    }
+     
+    //bs_connect();
 
     while (1){
        //uart_noblock(fd);
        len = read(fd,rcv_buf,99);  
-       printf("rec %d bytes from %s \n", len, uart_dev);
+       if(len != -1)
+	    printf("rec %d bytes from %s \n", len, uart_dev);
        if(len > 0) {
            printf(rcv_buf);
          }

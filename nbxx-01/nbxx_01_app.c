@@ -407,6 +407,7 @@ void updateNbLed(void)
     LED_On(led);
   }
 }
+
 uint8_t send_data_to_nb(uint8_t NB_CMD,char *fmt,...)
 {
   
