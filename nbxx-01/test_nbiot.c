@@ -350,19 +350,19 @@ int main(int argc, char **argv)
     //bs_connect();
 
     while (1){
-       //uart_noblock(fd);
+       uart_noblock(fd);
        len = read(fd,rcv_buf,99);  
        if(len != -1)
 	    printf("rec %d bytes from %s \n", len, uart_dev);
        if(len > 0) {
-           printf(rcv_buf);
+           printf("received data: %s\n",rcv_buf);
          }
 
        strcpy(kb_buf, "at+cgmr\r\n");
 
        for(i=0; i<100000; i++);
        len = write(fd, kb_buf, strlen(kb_buf));
-       printf("write %d bytes to %s \n", len, uart_dev);
+       //printf("write %d bytes to %s \n", len, uart_dev);
        for(i=0; i<1000000; i++);
 /*
        if(kbhit()) {
