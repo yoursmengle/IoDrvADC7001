@@ -16,6 +16,12 @@
  extern "C" {
 #endif
 
+#define NO_BACK  0x00
+#define BACK_TIMEOUT  0x01
+#define BACK_TRUE  0x02
+
+#define NB_back_result  uint8_t
+
 #define COUNTOF(__BUFFER__)   (sizeof(__BUFFER__) / sizeof(*(__BUFFER__)))
 #define  BUFFSIZE  512
   /* Size of Trasmission buffer */
@@ -23,7 +29,26 @@
   /* Size of Reception buffer */
 #define RXBUFFERSIZE                      BUFFSIZE //TXBUFFERSIZE  
 
+#pragma  pack(push)  //±£´æ¶ÔÆë×´Ì¬  
+#pragma  pack(1) 
+typedef struct{
+  char *cmdstr;
+  uint16_t revtimeout;
+  char *cmdtruebackstr;
+  NB_back_result  revresult;
+  uint8_t rty_num;
+}NBIOT_CMD_Data_t;  
 
+#pragma  pack(1)    
+typedef struct {
+  char rec_buffer[BUFFSIZE*3];
+  char *p_read;
+  char *p_write;
+  uint8_t rec_data_finish_flag;
+  uint16_t max_len;
+}Nb_rec_buffer;
+  
+#pragma pack(pop)
 
 
 
@@ -69,6 +94,31 @@ typedef struct
   uint16_t Buffer_State; //Buffer×´Ì¬
   uint8_t *Data_Buffer; //Buffer»º´æÇø
 }USER_BUFFER_Typedef;
+
+
+volatile NBIOT_CMD_Data_t nbiot_cmd_data[20]=
+{
+//cmdstr,    revtimeout(s),   cmdtruebackstr,   revresult
+  {"AT+CFUN=0\r\n",  5,       "OK" ,NO_BACK,1},           
+  {"AT+CGSN=1\r\n",  2,       "OK" ,NO_BACK,3}, 
+  {"AT+NRB\r\n",     10,      "OK" ,NO_BACK,1}, 
+  {"AT+CFUN=1\r\n",  6,      "OK" ,NO_BACK,3}, 
+  {"AT+CIMI\r\n",    2,        "OK" ,NO_BACK,3}, 
+  {"AT+CMEE=1\r\n",  2,        "OK" ,NO_BACK,1}, 
+  {"AT+CGDCONT=1,\"IP\",\"ctnet\"\r\n",  2,        "OK" ,NO_BACK,1}, 
+  {"AT+NNMI=1\r\n",  2,        "OK" ,NO_BACK,1}, 
+  {"AT+CGATT=1\r\n",  2,        "OK" ,NO_BACK,1}, 
+  {"AT+CSCON=1\r\n",  20,        "+CSCON:1" ,NO_BACK,1}, 
+  {"AT+CGPADDR=1\r\n", 3,        "+CGPADDR:1," ,NO_BACK,60}, 
+  {"AT+NUESTATS\r\n" ,  2,        "OK" ,NO_BACK,1},
+  {"CMDSTR_NOUSE",  2,        "OK" ,NO_BACK,1}, 
+ // {"AT+NSOCL=1",  2,        "OK" ,NO_BACK,1}, 
+   
+  {"CMDSTR_NOUSE",  2,         "OK" ,NO_BACK,1}, //AT+NSOCR  CMD
+  {"CMDSTR_NOUSE",  5,        "OK" ,NO_BACK,1},//NB_SEND_DATA  CMD
+  {"CMDSTR_NOUSE",  8,       "NSONMI" ,NO_BACK,1},//NB_SEND_DATA with ack  CMD
+  {"CMDSTR_NOUSE",  10,       "OK" ,NO_BACK,1},//REV_NB_DATA CMD  NB_AT_NSORF
+};
 
 
 typedef enum
@@ -120,44 +170,7 @@ typedef enum
   BACK_TRUE,
 }NB_back_result; 
 */
-#define NO_BACK  0x00
-#define BACK_TIMEOUT  0x01
-#define BACK_TRUE  0x02
 
-#define NB_back_result  uint8_t
-  
-   
-   
-   
-#pragma  pack(push)  //±£´æ¶ÔÆë×´Ì¬  
-#pragma  pack(1) 
-typedef struct{
-  char *cmdstr;
-  uint16_t revtimeout;
-  char *cmdtruebackstr;
-  NB_back_result  revresult;
-  uint8_t rty_num;
-}NBIOT_CMD_Data_t;    
-   
-#pragma  pack(1)    
-typedef struct {
-  char rec_buffer[BUFFSIZE*3];
-  char *p_read;
-  char *p_write;
-  uint8_t rec_data_finish_flag;
-  uint16_t max_len;
-}Nb_rec_buffer;
-
-
-#pragma pack(pop)
-
-
-
-extern Nb_rec_buffer nb_rec_buffer;
-
-extern uint8_t aRxBuffer[];
-
-extern volatile NBIOT_CMD_Data_t nbiot_cmd_data[];
 
 uint8_t get_NB_RF_DATA_NUM(void);
 void set_NB_RF_DATA_NUM_down_1(void);

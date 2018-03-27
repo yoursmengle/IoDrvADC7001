@@ -3,6 +3,148 @@
 #include "common.h"
 #include "nbxx_01.h"
 
+static uint16_t foundstr_timeout=0;
+static char *foundstr;
+static uint8_t *foundresult;
+static uint16_t revlen=0; 
+static uint8_t current_NB_cmd=NB_AT_CFUN0;
+static uint8_t NB_RF_DATA_NUM=0;
+
+uint8_t aRxBuffer[BUFFSIZE];
+
+Nb_rec_buffer nb_rec_buffer={
+  {0},
+  NULL,
+  NULL,
+  DATA_REC_NO_FINISH,
+  BUFFSIZE*3
+};
+
+uint16_t  uart_NBxx_01_read(uint8_t *fmt)
+{
+  char *p=nb_rec_buffer.p_read;
+  char *m=nb_rec_buffer.p_write;
+  bool complete=false;
+  uint16_t i=0;
+  if(p<m){
+    while(p<m){
+      *(fmt+i)=*p;
+      
+     /* if(*p=='\n'){
+        p++;
+        i++;
+        complete=true;
+        break;
+      }*/
+      p++;
+      i++;
+      if(i>=BUFFSIZE){ //缓存满
+        break;
+      }
+      
+    }
+    complete=true;
+  }
+  else if(p>m){//写指针回去了
+    while(p<nb_rec_buffer.rec_buffer+nb_rec_buffer.max_len){
+      *(fmt+i)=*(p);
+      
+     /* if(*p=='\n'){
+        p++;
+        i++;
+        complete=true;
+        break;
+      }*/
+      p++;
+      i++;
+      if(i>=BUFFSIZE){ //缓存满
+        break;
+      }
+      
+    }
+    if(complete==false&&i<BUFFSIZE){//读指针回头
+      p=nb_rec_buffer.rec_buffer;
+      while(i<BUFFSIZE){
+        //  i++; //这里可能导致问题
+
+        *(fmt+i)=*(p);
+        
+        /*if(*p=='\n'){
+          p++;
+          i++;
+          complete=true;
+          break;
+        }*/
+        p++;
+        i++;
+        if(p==m)
+        {
+          complete=true;
+          break;
+        }
+      }
+    }
+  }
+  if(complete){
+    nb_rec_buffer.p_read=p;
+    //log_s("NB_REC:%s",fmt);
+    return i;
+  }
+  return 0;
+}
+
+bool check_strstr(char *data1,char *data2,uint16_t len)
+{
+   uint16_t i=0;
+   char *p;
+   p=data2;
+   do
+   {
+      if(*data1==*p)
+      { 
+         p++;
+         if(*p=='\0')
+         {
+            return true;
+         }
+         
+      }
+      else
+      { 
+        p=data2;
+      }
+      data1++;
+      if(*data1=='\0')
+      {
+         return false;
+      }
+      i++;
+   }while(i<len);
+   return false;
+}
+
+
+void NBIOT_data_reveive(void)
+{ 
+   revlen=uart_NBxx_01_read(aRxBuffer);
+   if(check_strstr((char *)aRxBuffer,foundstr,revlen)==true)
+   {
+      *foundresult=BACK_TRUE;
+      //hal_DISABLE_TIMER(&TimHandle_NB_REV_TIMEOUT);
+   }
+   if(check_strstr((char *)aRxBuffer,"NSONMI",revlen)==true) //如果NB接收到服务器数据，通知主循环读出
+   {
+      if((current_NB_cmd==NB_SEND_DATA_ACK)&&(*foundresult==NO_BACK))//如果当前正在等待接收服务器数据
+      {
+        *foundresult=NO_BACK; // 仅起通知作用 
+        //hal_DISABLE_TIMER(&TimHandle_NB_REV_TIMEOUT);
+      }
+      NB_RF_DATA_NUM++;  
+   }
+   
+}
+
+
 int export_port(unsigned int port_num)
 {
 	char cmd[80];
