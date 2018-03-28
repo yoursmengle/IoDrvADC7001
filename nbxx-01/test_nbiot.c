@@ -124,7 +124,7 @@ bool check_strstr(char *data1,char *data2,uint16_t len)
 }
 
 
-void NBIOT_data_reveive(void)
+void NBIOT_data_receive(void)
 { 
    revlen=uart_NBxx_01_read(aRxBuffer);
    if(check_strstr((char *)aRxBuffer,foundstr,revlen)==true)
